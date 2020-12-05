@@ -281,7 +281,7 @@ git push
 这是由于git默认拒绝了push操作，需要进行设置，修改【在服务器上的git仓库中】.git/config文件后面添加如下代码：
 ```shell
 [receive]
-denyCurrentBranch = ignore
+	denyCurrentBranch = ignore
 ```
 重新git push即可
 {% note primary %}
