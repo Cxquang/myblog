@@ -1,0 +1,317 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>在虚拟机中安装CentOS(一) | Cquang博客</title><meta name="keywords" content="环境搭建,VirtualBox,CentOS7"><meta name="author" content="Cai XianQuan"><meta name="copyright" content="Cai XianQuan"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="集群搭建准备工作，使用VirtualBox安装CentOS7并能够在多台虚拟机之间进行通信。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在虚拟机中安装CentOS(一)">
+<meta property="og:url" content="http://www.caixianquan.tk/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/index.html">
+<meta property="og:site_name" content="Cquang博客">
+<meta property="og:description" content="集群搭建准备工作，使用VirtualBox安装CentOS7并能够在多台虚拟机之间进行通信。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.caixianquan.tk/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS7%E9%A6%96%E9%A1%B5.jpg">
+<meta property="article:published_time" content="2020-10-02T07:49:37.000Z">
+<meta property="article:modified_time" content="2020-10-30T06:25:33.000Z">
+<meta property="article:author" content="Cai XianQuan">
+<meta property="article:tag" content="环境搭建">
+<meta property="article:tag" content="VirtualBox">
+<meta property="article:tag" content="CentOS7">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.caixianquan.tk/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS7%E9%A6%96%E9%A1%B5.jpg"><link rel="shortcut icon" href="/img/favicon1.png"><link rel="canonical" href="http://www.caixianquan.tk/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'mediumZoom',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: true,
+  isToc: true,
+  postUpdate: '2020-10-30 14:25:33'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><link rel="stylesheet" href="/css/VolantisTags.css"><meta name="generator" content="Hexo 5.2.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/img/%E5%A4%B4%E5%83%8F.gif" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">21</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 享受时光</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li></ul></div></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS7%E9%A6%96%E9%A1%B5.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Cquang博客</a></span><span id="menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 享受时光</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li></ul></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">在虚拟机中安装CentOS(一)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-10-02T07:49:37.000Z" title="发表于 2020-10-02 15:49:37">2020-10-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-10-30T06:25:33.000Z" title="更新于 2020-10-30 14:25:33">2020-10-30</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/">大数据学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%9B%86%E7%BE%A4%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">大数据集群环境搭建</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="安装VirtualBox"><a href="#安装VirtualBox" class="headerlink" title="安装VirtualBox"></a>安装VirtualBox</h1><ul>
+<li>下载地址：<a target="_blank" rel="noopener" href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a></li>
+</ul>
+<p>直接安装即可</p>
+<h1 id="安装虚拟机"><a href="#安装虚拟机" class="headerlink" title="安装虚拟机"></a>安装虚拟机</h1><ol>
+<li><p>点击新建，填写虚拟机名称和指定文件夹<br><img src="1%E3%80%81%E5%A1%AB%E5%86%99%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%90%8D%E7%A7%B0.png" alt="填写虚拟机名称"></p>
+</li>
+<li><p>指定内存大小为4096MB，创建虚拟硬盘</p>
+<img src="/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/2%E3%80%81%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%A1%AC%E7%9B%98.png" class="">
+<img src="/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/3%E3%80%81%E7%8E%B0%E5%9C%A8%E5%88%9B%E5%BB%BA%E7%A1%AC%E7%9B%98.png" class=""></li>
+</ol>
+<ul>
+<li>默认类型VDI即可<br><img src="4%E3%80%81%E9%BB%98%E8%AE%A4%E7%B1%BB%E5%9E%8B.png" alt="默认类型"></li>
+<li>动态分配硬盘大小<br><img src="5%E3%80%81%E5%8A%A8%E6%80%81%E5%88%86%E9%85%8D%E7%A1%AC%E7%9B%98%E5%A4%A7%E5%B0%8F.png" alt="动态分配硬盘大小"></li>
+</ul>
+<ol start="3">
+<li>指定虚拟硬盘文件存放位置和大小<br><img src="6%E3%80%81%E6%8C%87%E5%AE%9A%E8%99%9A%E6%8B%9F%E7%A1%AC%E7%9B%98%E6%96%87%E4%BB%B6%E5%AD%98%E6%94%BE%E4%BD%8D%E7%BD%AE%E5%92%8C%E5%A4%A7%E5%B0%8F.png" alt="指定虚拟硬盘文件存放位置和大小"></li>
+<li>启动虚拟机，指定光驱存放位置，开始安装CentOS7系统<br><img src="7%E3%80%81%E6%8C%87%E5%AE%9A%E5%85%89%E9%A9%B1.png" alt="指定光驱"></li>
+</ol>
+<h2 id="创建虚拟机时报错问题"><a href="#创建虚拟机时报错问题" class="headerlink" title="创建虚拟机时报错问题"></a>创建虚拟机时报错问题</h2><p><img src="8%E3%80%81%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%97%B6%E6%8A%A5%E9%94%99%E9%97%AE%E9%A2%98.png" alt="创建虚拟机时报错问题"></p>
+<div class="note warning flat"><p>由于Hyper-V 虚拟化在 windows 中已经被启用，故需要关闭Hyper-V，直接在控制面板中关闭重启电脑即可</p>
+</div>
+
+<h1 id="安装CentOS系统"><a href="#安装CentOS系统" class="headerlink" title="安装CentOS系统"></a>安装CentOS系统</h1><ol>
+<li>在进入系统引导后，会进入文字界面，选择install CentOS7<br><font color=red size=3><strong>（用键盘上的方向键↑、↓来选择要执行的操作，白色字体表示选中，按下回车，进入下一步操作）</strong></font><br><img src="9%E3%80%81%E8%BF%9B%E5%85%A5%E5%AE%89%E8%A3%85%E7%95%8C%E9%9D%A2.png" alt="进入安装界面"></li>
+<li>按回车执行安装过程<br><img src="10%E3%80%81%E6%89%A7%E8%A1%8C%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B.png" alt="执行安装过程"></li>
+<li>选择安装的语言<br><img src="11%E3%80%81%E9%80%89%E6%8B%A9%E5%AE%89%E8%A3%85%E7%9A%84%E8%AF%AD%E8%A8%80.png" alt="选择安装的语言"></li>
+<li>设置安装类型<br><img src="12%E3%80%81%E8%AE%BE%E7%BD%AE%E5%AE%89%E8%A3%85%E7%B1%BB%E5%9E%8B.png" alt="设置安装类型"></li>
+<li>点击“软件选择”，默认是最小安装，只有系统功能，完全使用命令行操作<br><img src="13%E3%80%81%E8%BD%AF%E4%BB%B6%E9%80%89%E6%8B%A9.png" alt="软件选择"></li>
+<li>按照下图选择，点击上方“完成”返回到前一个页面即可，点击“开始安装”开始安装服务器<br><img src="14%E3%80%81%E5%BC%80%E5%A7%8B%E5%AE%89%E8%A3%85.png" alt="开始安装"></li>
+<li>设置用户密码<br><img src="15%E3%80%81%E8%AE%BE%E7%BD%AE%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81.png" alt="设置用户密码"></li>
+<li>成功进入CentOS系统，默认选择的是“汉语”，直接“前进”即可<br><img src="16%E3%80%81%E9%80%89%E6%8B%A9%E8%AF%AD%E8%A8%80.png" alt="选择语言"></li>
+<li>选择输入法为“汉语(Intelligent Pinyin)”,汉语智能拼音输入法，否则无法输入汉字</li>
+<li>关闭定位（默认是打开的）<br><img src="17%E3%80%81%E5%85%B3%E9%97%AD%E5%AE%9A%E4%BD%8D.png" alt="关闭定位"><br><img src="18%E3%80%81%E4%BD%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1.png" alt="位置服务"></li>
+<li>时区定位北京，跳过登录账号<br><img src="19%E3%80%81%E5%AE%9A%E4%BD%8D%E5%8C%97%E4%BA%AC.png" alt="定位北京"><br><img src="20%E3%80%81%E8%B7%B3%E8%BF%87%E5%9C%A8%E7%BA%BF%E8%B4%A6%E5%8F%B7.png" alt="跳过在线账号"></li>
+</ol>
+<h1 id="使用复制创建另外两个虚拟机"><a href="#使用复制创建另外两个虚拟机" class="headerlink" title="使用复制创建另外两个虚拟机"></a>使用复制创建另外两个虚拟机</h1><ol>
+<li><p>选择创建好的虚拟机右键复制，如下，修改虚拟机名称，存储位置、MAC地址初始化如下图所示<br><img src="21%E3%80%81%E5%A4%8D%E5%88%B6%E8%99%9A%E6%8B%9F%E6%9C%BA.png" alt="复制虚拟机"></p>
+</li>
+<li><p>选择完全复制，就可以得到另外两个虚拟机<br><img src="22%E3%80%81%E5%AE%8C%E5%85%A8%E5%A4%8D%E5%88%B6.png" alt="完全复制"><br><img src="23%E3%80%81%E4%BA%A7%E7%94%9F%E4%B8%A4%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA.png" alt="产生两个虚拟机"></p>
+</li>
+</ol>
+<h2 id="修改Slave1和Slave2"><a href="#修改Slave1和Slave2" class="headerlink" title="修改Slave1和Slave2"></a>修改Slave1和Slave2</h2><ol>
+<li>修改内存大小为2048MB<br><img src="24%E3%80%81%E4%BF%AE%E6%94%B9%E5%86%85%E5%AD%98.png" alt="修改内存"></li>
+<li>修改用户名分别为Slave1和Slave2</li>
+</ol>
+<ul>
+<li>举例Slave1：</li>
+<li>以root身份进入系统<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">usermod  -l  新用户名  -d  /home/新用户名  -m  老用户名   （英文L）</span><br><span class="line">如：usermod -l caixianquan-Slave1 -d /home/caixianquan-Slave1 -m caixianquan-Master</span><br></pre></td></tr></table></figure>
+此时登录界面还是caixianquan-Master显示的用户名，这时登录这个普通用户，在设置–&gt;详细信息–&gt;用户里面的账号修改用户名即可，如示图<br><img src="25%E3%80%81%E4%BF%AE%E6%94%B9%E7%99%BB%E5%BD%95%E7%95%8C%E9%9D%A2%E7%94%A8%E6%88%B7%E5%90%8D.png" alt="修改登录界面用户名"></li>
+</ul>
+<h1 id="主机与虚拟机实现复制粘贴"><a href="#主机与虚拟机实现复制粘贴" class="headerlink" title="主机与虚拟机实现复制粘贴"></a>主机与虚拟机实现复制粘贴</h1><ol>
+<li>打开虚拟机，菜单栏中点击设备，选择共享文件夹，共享粘贴板，拖动都选择双向，然后点击安装增强功能，出现如下问题</li>
+</ol>
+<p><img src="26%E3%80%81%E5%AE%89%E8%A3%85%E5%A2%9E%E5%BC%BA%E5%8A%9F%E8%83%BD%E5%87%BA%E7%8E%B0%E9%97%AE%E9%A2%98.png" alt="安装增强功能出现问题"></p>
+<div class="note primary flat"><p>解决方法：进入系统在侧边找到如图加载的虚拟光驱，右击，点击弹出，然后就可正常安装增强功能了</p>
+</div>
+<p><img src="27%E3%80%81%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E5%85%89%E9%A9%B1.png" alt="弹出虚拟光驱"></p>
+<ol start="2">
+<li>安装完成之后重启即可使用增强功能</li>
+</ol>
+<h1 id="虚拟机上网，相互之间可以ping通，和主机ping通"><a href="#虚拟机上网，相互之间可以ping通，和主机ping通" class="headerlink" title="虚拟机上网，相互之间可以ping通，和主机ping通"></a>虚拟机上网，相互之间可以ping通，和主机ping通</h1><div class="note primary flat"><p><font color=red size=3><strong>需要两个网卡才可以同时上网和ping通主机，一个使用NAT模式，一个使用Host-only模式【按照下图可以通过设置直接使用Host-only实现包含NAT模式中的所有功能，未测试】</strong></font><br><font color=red size=3><strong>或者直接使用桥接模式，但需要独立的真实IP</strong></font></p>
+</div>
+
+<ol>
+<li>VirtualBox中有4中网络连接方式:</li>
+</ol>
+<ul>
+<li>NAT </li>
+<li>Bridged Adapter </li>
+<li>Internal </li>
+<li>Host-only Adapter<br><img src="28%E3%80%81%E5%9B%9B%E7%A7%8D%E7%BD%91%E7%BB%9C%E8%BF%9E%E6%8E%A5%E6%96%B9%E5%BC%8F.png" alt="四种网络连接方式"><br>参考地址：<a target="_blank" rel="noopener" href="https://blog.csdn.net/java_zjh/article/details/81147572">https://blog.csdn.net/java_zjh/article/details/81147572</a></li>
+</ul>
+<h2 id="NAT"><a href="#NAT" class="headerlink" title="NAT"></a>NAT</h2><ol>
+<li>NAT：Network Address Translation，网络地址转换</li>
+<li>NAT模式是最简单的实现虚拟机上网的方式，你可以这样理解：</li>
+</ol>
+<ul>
+<li>Guest访问网络的所有数据都是由主机提供的，Guest并不真实存在于网络中，主机与网络中的任何机器都不能查看和访问到Guest的存在。</li>
+<li>Guest可以访问主机能访问到的所有网络，但是对于主机以及主机网络上的其他机器，Guest又是不可见的，甚至主机也访问不到Guest。</li>
+</ul>
+<ol start="3">
+<li>虚拟机与主机的关系：只能单向访问，虚拟机可以通过网络访问到主机，主机无法通过网络访问到虚拟机。</li>
+<li>虚拟机与网络中其他主机的关系：只能单向访问，虚拟机可以访问到网络中其他主机，其他主机不能通过网络访问到虚拟机。</li>
+<li>虚拟机与虚拟机的关系：相互不能访问，虚拟机与虚拟机各自完全独立，相互间无法通过网络访问彼此。</li>
+</ol>
+<h2 id="Bridged-Adapter（网桥模式）"><a href="#Bridged-Adapter（网桥模式）" class="headerlink" title="Bridged Adapter（网桥模式）"></a>Bridged Adapter（网桥模式）</h2><ul>
+<li>网桥模式，你可以这样理解：</li>
+<li>它是通过主机网卡，架设了一条桥，直接连入到网络中了。因此，它使得虚拟机能被分配到一个网络中独立的IP，所有网络功能完全和在网络中的真实机器一样。</li>
+<li>网桥模式下的虚拟机，你把它认为是真实计算机就行了。</li>
+<li>虚拟机与主机的关系：可以相互访问，因为虚拟机在真实网络段中有独立IP，主机与虚拟机处于同一网络段中，彼此可以通过各自IP相互访问。</li>
+<li>虚拟机于网络中其他主机的关系：可以相互访问，同样因为虚拟机在真实网络段中有独立IP，虚拟机与所有网络其他主机处于同一网络段中，彼此可以通过各自IP相互访问。</li>
+<li>虚拟机与虚拟机的关系：可以相互访问，原因同上。</li>
+</ul>
+<h2 id="Internal（内网模式）"><a href="#Internal（内网模式）" class="headerlink" title="Internal（内网模式）"></a>Internal（内网模式）</h2><ul>
+<li>内网模式，顾名思义就是内部网络模式：</li>
+<li>虚拟机与外网完全断开，只实现虚拟机于虚拟机之间的内部网络模式。</li>
+<li>虚拟机与主机的关系：不能相互访问，彼此不属于同一个网络，无法相互访问。</li>
+<li>虚拟机与网络中其他主机的关系：不能相互访问，理由同上。</li>
+<li>虚拟机与虚拟机的关系：可以相互访问，前提是在设置网络时，两台虚拟机设置同一网络名称。如上配置图中，名称为intnet。</li>
+</ul>
+<p>##、Host-only Adapter（主机模式）</p>
+<ul>
+<li>主机模式，这是一种比较复杂的模式，需要有比较扎实的网络基础知识才能玩转。可以说前面几种模式所实现的功能，在这种模式下，通过虚拟机及网卡的设置都可以被实现。</li>
+<li>我们可以理解为Guest在主机中模拟出一张专供虚拟机使用的网卡，所有虚拟机都是连接到该网卡上的，我们可以通过设置这张网卡来实现上网及其他很多功能，比如（网卡共享、网卡桥接等）。</li>
+<li>虚拟机与主机的关系：默认不能相互访问，双方不属于同一IP段，host-only网卡默认IP段为192.168.56.X 子网掩码为255.255.255.0，后面的虚拟机被分配到的也都是这个网段。通过网卡共享、网卡桥接等，可以实现虚拟机于主机相互访问。</li>
+<li>虚拟机与网络主机的关系：默认不能相互访问，原因同上，通过设置，可以实现相互访问。</li>
+<li>虚拟机与虚拟机的关系：默认可以相互访问，都是同处于一个网段。</li>
+</ul>
+<h2 id="NAT模式实现"><a href="#NAT模式实现" class="headerlink" title="NAT模式实现"></a>NAT模式实现</h2><ol>
+<li>安装完 CentOS 7 之后，关闭三个虚拟机系统</li>
+<li>【全局设置网卡】在 VirtualBox 主控制界面点击 【管理】–【全局设定】–【网络】–【添加新NAT网络】<br><img src="29%E3%80%81%E5%85%A8%E5%B1%80%E8%AE%BE%E7%BD%AE%E7%BD%91%E5%8D%A1.png" alt="全局设置网卡"></li>
+<li>在弹出的对话框中，设置【网络CIDR】为【192.168.100.0/24】，【确定】<br><img src="30%E3%80%81%E8%AE%BE%E7%BD%AE%E7%BD%91%E7%BB%9CCIDR.png" alt="设置网络CIDR"></li>
+<li>【单独对每一个虚拟机设置】在管理界面点击【设置】–【网络】–【网卡1】，【连接方式】选择【NAT网络】，【界面名称】选【NATNetwork】，【确定】<br><img src="31%E3%80%81%E5%8D%95%E7%8B%AC%E8%AE%BE%E7%BD%AE%E8%99%9A%E6%8B%9F%E6%9C%BA.png" alt="单独设置虚拟机"><br><img src="32%E3%80%81%E5%8D%95%E7%8B%AC%E8%AE%BE%E7%BD%AE%E8%99%9A%E6%8B%9F%E6%9C%BA.png" alt="单独设置虚拟机"><br><img src="33%E3%80%81%E5%8D%95%E7%8B%AC%E8%AE%BE%E7%BD%AE%E8%99%9A%E6%8B%9F%E6%9C%BA.png" alt="单独设置虚拟机"></li>
+<li>【启动】，登进系统，运行：<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> vi /etc/sysconfig/network-scripts/ifcfg-enp0s3</span></span><br></pre></td></tr></table></figure></li>
+<li>修改ifcfg-eth0配置文件：<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">需要的信息：</span><br><span class="line">BOOTPROTO=static</span><br><span class="line">NM_CONTROLLED=no</span><br><span class="line">IPADDR=192.168.100.10  #Master</span><br><span class="line"><span class="meta">#</span><span class="bash">IPADDR=192.168.100.20  <span class="comment">#Slave1</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">IPADDR=192.168.100.30  <span class="comment">#Slave2</span></span></span><br><span class="line">NETMASK=255.255.255.0</span><br><span class="line">GATEWAY=192.168.100.1  #默认网关，在网段为192.168.100.0/24的时候</span><br><span class="line">DNS1=114.114.114.114 	#宿主主机的DNS信息</span><br></pre></td></tr></table></figure></li>
+<li>重启网络服务：<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> service network restart</span></span><br></pre></td></tr></table></figure></li>
+<li>此时可以正常联网了<h2 id="Host-only-Adapter（主机模式）"><a href="#Host-only-Adapter（主机模式）" class="headerlink" title="Host-only Adapter（主机模式）"></a>Host-only Adapter（主机模式）</h2></li>
+<li>关闭系统，在【管理】–【全局设定】–【网络】中，应该能看到【仅主机（Host-Only）网络】的选项卡。在安装完 VirtualBox后，在计算机的【网络和共享中心】–【更改适配器设置】中可以看到【VirtualBox Host-Only Network】：<br><img src="34%E3%80%81%E6%9B%B4%E6%94%B9%E9%80%82%E9%85%8D%E5%99%A8%E8%AE%BE%E7%BD%AE.png" alt="更改适配器设置"></li>
+<li>回到 VirtualBox，点击菜单栏上的管理按键，然后选择主机网络管理器，可以看到：<br><img src="35%E3%80%81%E4%B8%BB%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86%E5%99%A8.png" alt="主机网络管理器"></li>
+<li>对每一台虚拟机，【设置】–【网络】–【网卡2】–【启用网络连接】，【连接方式】选【仅主机（Host-Only）网络】：<br><img src="36%E3%80%81%E5%AF%B9%E6%AF%8F%E4%B8%80%E5%8F%B0%E8%99%9A%E6%8B%9F%E6%9C%BA%E8%BF%9B%E8%A1%8C%E8%AE%BE%E7%BD%AE.png" alt="对每一台虚拟机进行设置"></li>
+<li>开机，执行如以下命令<br><font color=red size=3><strong>（注意：在CentOS7中的网卡配置文件有所改变，看下面的命令）</strong></font><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">cd</span> /etc/sysconfig/network-scripts/</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> cp ifcfg-enp0s3 ifcfg-enp0s8  <span class="comment">#将原先NAT模式网卡复制一份位ifcfg-enp0s8</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> vi ifcfg-enp0s8</span></span><br></pre></td></tr></table></figure></li>
+<li>删除【HWADDR】行，删除【UUID】行，添加【IPADDR】和【NETMASK】，修改【DEVICE】为【eth1】，【BOOTPROTO】为【static】：<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">TYPE=Ethernet</span><br><span class="line">PROXY_METHOD=none</span><br><span class="line">BROWSER_ONLY=no</span><br><span class="line">BOOTPROTO=static</span><br><span class="line">DEFROUTE=yes</span><br><span class="line">IPV4_FAILURE_FATAL=no</span><br><span class="line">IPV6INIT=yes</span><br><span class="line">IPV6_AUTOCONF=yes</span><br><span class="line">IPV6_DEFROUTE=yes</span><br><span class="line">IPV6_FAILURE_FATAL=no</span><br><span class="line">IPV6_ADDR_GEN_MODE=stable-privacy</span><br><span class="line">NAME=enp0s8</span><br><span class="line">DEVICE=enp0s8</span><br><span class="line">ONBOOT=yes</span><br><span class="line"> </span><br><span class="line">NM_CONTROLLED=no</span><br><span class="line">IPADDR=192.168.56.30  #Slave2</span><br><span class="line"><span class="meta">#</span><span class="bash">IPADDR=192.168.56.10   <span class="comment">#Master</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">IPADDR=192.168.56.20   <span class="comment">#Slave1</span></span></span><br><span class="line">NETMASK=255.255.255.0</span><br></pre></td></tr></table></figure></li>
+<li>重启网络服务，即可与主机互相ping通<div class="note primary flat"><p>在公司虚拟网中或者家庭网中容易实现</p>
+</div>
+
+</li>
+</ol>
+<h2 id="桥接模式【需要独立ip】"><a href="#桥接模式【需要独立ip】" class="headerlink" title="桥接模式【需要独立ip】"></a>桥接模式【需要独立ip】</h2><ol>
+<li>由于桥接模式能够让虚拟机共享局域网，方便自己可以用一台电脑启动集群，另一台测试和做笔记等，故在此记录桥接模式配置的过程</li>
+</ol>
+<ul>
+<li>参考地址：<a target="_blank" rel="noopener" href="https://blog.csdn.net/java_zjh/article/details/81147572">配置virtualbox虚拟机Linux系统桥接模式上网</a></li>
+</ul>
+<ol start="2">
+<li><p>关闭系统，在【管理】–【主机网络管理器】中创建一个VirtualBox Host-Only Ethernet Adapter网卡【如果本地连接中存在该网卡，则不必添加】，如图所示：<br><img src="37%E3%80%81%E6%B7%BB%E5%8A%A0%E7%BD%91%E5%8D%A1.png" alt="添加网卡"></p>
+</li>
+<li><p>在本地网络连接中可以看到添加了一块网卡<br><img src="38%E3%80%81%E6%9F%A5%E7%9C%8B%E6%B7%BB%E5%8A%A0%E7%9A%84%E7%BD%91%E5%8D%A1.png" alt="查看添加的网卡"></p>
+</li>
+<li><p>点击本地连接的属性，看是否出现virtualbox bridged networking dirver 选项，如果未出现，点击安装（应该在服务选项中），并且选中，点击确定；<br><img src="39%E3%80%81%E6%B7%BB%E5%8A%A0%E9%A9%B1%E5%8A%A8.png" alt="添加驱动"></p>
+</li>
+<li><p>对VirtualBox Host-Only Network网卡进行信息配置<br><img src="40%E3%80%81%E9%85%8D%E7%BD%AE%E7%BD%91%E5%8D%A1%E4%BF%A1%E6%81%AF.png" alt="配置网卡信息"></p>
+</li>
+<li><p>对每一台虚拟机，【设置】–【网络】–【网卡1】–【启用网络连接】，【连接方式】选【桥接网卡】：<br><img src="41%E3%80%81%E5%90%AF%E7%94%A8%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F.png" alt="启用桥接模式"></p>
+</li>
+<li><p>启动系统，修改linux中的网卡信息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">TYPE=Ethernet</span><br><span class="line">PROXY_METHOD=none</span><br><span class="line">BROWSER_ONLY=no</span><br><span class="line">BOOTPROTO=static</span><br><span class="line">DEFROUTE=yes</span><br><span class="line">IPV4_FAILURE_FATAL=no</span><br><span class="line">IPV6INIT=yes</span><br><span class="line">IPV6_AUTOCONF=yes</span><br><span class="line">IPV6_DEFROUTE=yes</span><br><span class="line">IPV6_FAILURE_FATAL=no</span><br><span class="line">IPV6_ADDR_GEN_MODE=stable-privacy</span><br><span class="line">NAME=enp0s3</span><br><span class="line">DEVICE=enp0s3</span><br><span class="line">ONBOOT=yes</span><br><span class="line"> </span><br><span class="line">NM_CONTROLLED=no</span><br><span class="line">IPADDR=192.168.2.30  #Slave2</span><br><span class="line"><span class="meta">#</span><span class="bash">IPADDR=192.168.2.10    <span class="comment">#Master</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">IPADDR=192.168.2.20    <span class="comment">#Slave1</span></span></span><br><span class="line">NETMASK=255.255.255.0</span><br><span class="line">GATEWAY=192.168.2.1 #根据本机物理网卡的网关</span><br><span class="line">DNS1=144.144.144.144</span><br></pre></td></tr></table></figure>
+<p><font color=red size=3><strong>注意如果在虚拟机管理器设置中没有启动虚拟网卡或者没有添加网卡，则在linux中的网卡 文件夹中的无效网卡信息文件要删除</strong></font></p>
+</li>
+<li><p>重启网卡服务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">[root@master share_folder]# service network restart</span><br><span class="line">Restarting network (via systemctl):                        [  确定  ]</span><br><span class="line">[root@master share_folder]# ifconfig</span><br><span class="line">enp0s3: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 192.168.2.30  netmask 255.255.255.0  broadcast 192.168.2.255</span><br><span class="line">        inet6 fe80::a00:27ff:fee0:88cc  prefixlen 64  scopeid 0x20&lt;link&gt;</span><br><span class="line">        ether 08:00:27:e0:88:cc  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 3597  bytes 243752 (238.0 KiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 82  bytes 9939 (9.7 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line">【测试网络连接】</span><br><span class="line">【ping通网络】</span><br><span class="line">[root@master share_folder]# ping www.baidu.com</span><br><span class="line">PING www.a.shifen.com (14.215.177.39) 56(84) bytes of data.</span><br><span class="line">64 bytes from 14.215.177.39 (14.215.177.39): icmp_seq=1 ttl=57 time=19.4 ms</span><br><span class="line">64 bytes from 14.215.177.39 (14.215.177.39): icmp_seq=2 ttl=57 time=18.7 ms</span><br><span class="line">64 bytes from 14.215.177.39 (14.215.177.39): icmp_seq=3 ttl=57 time=52.0 ms</span><br><span class="line">^C</span><br><span class="line">--- www.a.shifen.com ping statistics ---</span><br><span class="line">3 packets transmitted, 3 received, 0% packet loss, time 2002ms</span><br><span class="line">rtt min/avg/max/mdev = 18.730/30.074/52.008/15.512 ms</span><br><span class="line">【ping通过宿主主机】</span><br><span class="line">[root@master share_folder]# ping 192.168.2.172</span><br><span class="line">PING 192.168.2.172 (192.168.2.172) 56(84) bytes of data.</span><br><span class="line">64 bytes from 192.168.2.172: icmp_seq=1 ttl=64 time=0.403 ms</span><br><span class="line">64 bytes from 192.168.2.172: icmp_seq=2 ttl=64 time=0.277 ms</span><br><span class="line">^C</span><br><span class="line">--- 192.168.2.172 ping statistics ---</span><br><span class="line">2 packets transmitted, 2 received, 0% packet loss, time 999ms</span><br><span class="line">rtt min/avg/max/mdev = 0.277/0.340/0.403/0.063 ms</span><br><span class="line">【ping通局域网内的其他主机】</span><br><span class="line">[root@master share_folder]# ping 192.168.2.124</span><br><span class="line">PING 192.168.2.124 (192.168.2.124) 56(84) bytes of data.</span><br><span class="line">64 bytes from 192.168.2.124: icmp_seq=1 ttl=64 time=237 ms</span><br><span class="line">64 bytes from 192.168.2.124: icmp_seq=2 ttl=64 time=67.9 ms</span><br><span class="line">^C</span><br><span class="line">--- 192.168.2.124 ping statistics ---</span><br><span class="line">2 packets transmitted, 2 received, 0% packet loss, time 999ms</span><br><span class="line">rtt min/avg/max/mdev = 67.903/152.540/237.178/84.638 ms</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="主机模式-共享网络"><a href="#主机模式-共享网络" class="headerlink" title="主机模式+共享网络"></a>主机模式+共享网络</h2><p>参考地址：<a target="_blank" rel="noopener" href="https://blog.csdn.net/sunweixiang1002/article/details/84679928">VMware虚拟机三种网络模式详解 ———Host-Only（仅主机模式）</a></p>
+<ol>
+<li>主机模式配置和上述相同，这里配置共享网络<br><img src="42%E3%80%81%E5%85%B1%E4%BA%AB%E7%BD%91%E7%BB%9C%E8%AE%BE%E7%BD%AE.png" alt="共享网络设置"></li>
+<li>可以看到上图有一个提示，强制将VMware Network Adapter VMnet1的ip设置成192.168.137.1<br><img src="43%E3%80%81%E8%87%AA%E5%8A%A8%E5%88%86%E9%85%8DIP.png" alt="自动分配IP"></li>
+<li>将虚拟机重新设置IP,重启网卡服务<br><font color=red size=3><strong>要设置网关和DNS，与VMware Network Adapter VMnet1的IP相同</strong></font><br><img src="44%E3%80%81%E9%87%8D%E6%96%B0%E8%AE%BE%E7%BD%AE%E8%99%9A%E6%8B%9F%E6%9C%BAip.png" alt="重新设置虚拟机ip"><br><img src="45%E3%80%81%E8%83%BD%E5%A4%9F%E4%B8%8E%E4%B8%BB%E6%9C%BA%E9%80%9A%E4%BF%A1%E5%B9%B6%E4%B8%94ping%E9%80%9A%E5%A4%96%E7%BD%91.png" alt="能够与主机通信并且ping通外网"></li>
+</ol>
+<h1 id="关闭防火墙"><a href="#关闭防火墙" class="headerlink" title="关闭防火墙"></a>关闭防火墙</h1><div class="note primary flat"><p>关闭防火墙才能正常使用SSH连接，也可以添加规则（单机环境，只是实验，直接关闭容易点）</p>
+</div>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">查看防火墙状态</span></span><br><span class="line">service iptables status</span><br><span class="line"><span class="meta">#</span><span class="bash">关闭防火墙</span></span><br><span class="line">sudo service iptables stop</span><br><span class="line"><span class="meta">#</span><span class="bash">查看防火墙开机启动状态</span></span><br><span class="line">chkconfig iptables --list</span><br><span class="line"><span class="meta">#</span><span class="bash">关闭防火墙开机启动</span></span><br><span class="line">sudo chkconfig iptables off</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><figcaption><span>CentOS下的防火墙</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">启动： systemctl start firewalld</span><br><span class="line">关闭： systemctl stop firewalld</span><br><span class="line">查看状态： systemctl status firewalld </span><br><span class="line">开机禁用  ： systemctl disable firewalld</span><br><span class="line">开机启用  ： systemctl enable firewalld</span><br></pre></td></tr></table></figure>
+
+<h1 id="修改主机名-永久"><a href="#修改主机名-永久" class="headerlink" title="修改主机名(永久)"></a>修改主机名(永久)</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hostnamectl set-hostname &lt;newhostname&gt;</span><br></pre></td></tr></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Cai XianQuan</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://www.caixianquan.tk/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/">http://www.caixianquan.tk/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://www.caixianquan.tk" target="_blank">Cquang博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">环境搭建</a><a class="post-meta__tags" href="/tags/VirtualBox/">VirtualBox</a><a class="post-meta__tags" href="/tags/CentOS7/">CentOS7</a></div><div class="post_share"><div class="social-share" data-image="/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS7%E9%A6%96%E9%A1%B5.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/10/03/jdk%E5%92%8CHadoop%E6%90%AD%E5%BB%BA-%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E4%B8%8B-%E4%BA%8C/"><img class="prev-cover" src="/2020/10/03/jdk%E5%92%8CHadoop%E6%90%AD%E5%BB%BA-%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E4%B8%8B-%E4%BA%8C/jdk%E5%92%8CHadoop%E6%90%AD%E5%BB%BA%E9%A6%96%E9%A1%B5.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">jdk和Hadoop搭建--普通用户下(二)</div></div></a></div><div class="next-post pull-right"><a href="/2020/08/16/Git%E7%9F%A5%E8%AF%86%E7%82%B9%E5%8F%8A%E9%97%AE%E9%A2%98%E6%94%B6%E9%9B%86/"><img class="next-cover" src="/2020/08/16/Git%E7%9F%A5%E8%AF%86%E7%82%B9%E5%8F%8A%E9%97%AE%E9%A2%98%E6%94%B6%E9%9B%86/Git%E7%9F%A5%E8%AF%86%E7%82%B9%E5%8F%8A%E9%97%AE%E9%A2%98%E6%94%B6%E9%9B%86%E9%A6%96%E9%A1%B5.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Git知识点及问题收集</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/10/03/jdk和Hadoop搭建-普通用户下-二/" title="jdk和Hadoop搭建--普通用户下(二)"><img class="cover" src="/2020/10/03/jdk%E5%92%8CHadoop%E6%90%AD%E5%BB%BA-%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E4%B8%8B-%E4%BA%8C/jdk%E5%92%8CHadoop%E6%90%AD%E5%BB%BA%E9%A6%96%E9%A1%B5.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-03</div><div class="title">jdk和Hadoop搭建--普通用户下(二)</div></div></a></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/img/%E5%A4%B4%E5%83%8F.gif" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">Cai XianQuan</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">21</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div></div><a class="button--animated" id="card-info-btn" href="javascript:;"><i class="fab fa-bookmark"></i><span>加入书签</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">一花一世界,一木一菩提╮(￣▽ ￣)╭</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85VirtualBox"><span class="toc-number">1.</span> <span class="toc-text">安装VirtualBox</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="toc-number">2.</span> <span class="toc-text">安装虚拟机</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%97%B6%E6%8A%A5%E9%94%99%E9%97%AE%E9%A2%98"><span class="toc-number">2.1.</span> <span class="toc-text">创建虚拟机时报错问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85CentOS%E7%B3%BB%E7%BB%9F"><span class="toc-number">3.</span> <span class="toc-text">安装CentOS系统</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%A4%8D%E5%88%B6%E5%88%9B%E5%BB%BA%E5%8F%A6%E5%A4%96%E4%B8%A4%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="toc-number">4.</span> <span class="toc-text">使用复制创建另外两个虚拟机</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9Slave1%E5%92%8CSlave2"><span class="toc-number">4.1.</span> <span class="toc-text">修改Slave1和Slave2</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E4%B8%8E%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AE%9E%E7%8E%B0%E5%A4%8D%E5%88%B6%E7%B2%98%E8%B4%B4"><span class="toc-number">5.</span> <span class="toc-text">主机与虚拟机实现复制粘贴</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%8A%E7%BD%91%EF%BC%8C%E7%9B%B8%E4%BA%92%E4%B9%8B%E9%97%B4%E5%8F%AF%E4%BB%A5ping%E9%80%9A%EF%BC%8C%E5%92%8C%E4%B8%BB%E6%9C%BAping%E9%80%9A"><span class="toc-number">6.</span> <span class="toc-text">虚拟机上网，相互之间可以ping通，和主机ping通</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#NAT"><span class="toc-number">6.1.</span> <span class="toc-text">NAT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bridged-Adapter%EF%BC%88%E7%BD%91%E6%A1%A5%E6%A8%A1%E5%BC%8F%EF%BC%89"><span class="toc-number">6.2.</span> <span class="toc-text">Bridged Adapter（网桥模式）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Internal%EF%BC%88%E5%86%85%E7%BD%91%E6%A8%A1%E5%BC%8F%EF%BC%89"><span class="toc-number">6.3.</span> <span class="toc-text">Internal（内网模式）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NAT%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0"><span class="toc-number">6.4.</span> <span class="toc-text">NAT模式实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Host-only-Adapter%EF%BC%88%E4%B8%BB%E6%9C%BA%E6%A8%A1%E5%BC%8F%EF%BC%89"><span class="toc-number">6.5.</span> <span class="toc-text">Host-only Adapter（主机模式）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%E3%80%90%E9%9C%80%E8%A6%81%E7%8B%AC%E7%AB%8Bip%E3%80%91"><span class="toc-number">6.6.</span> <span class="toc-text">桥接模式【需要独立ip】</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E6%A8%A1%E5%BC%8F-%E5%85%B1%E4%BA%AB%E7%BD%91%E7%BB%9C"><span class="toc-number">6.7.</span> <span class="toc-text">主机模式+共享网络</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E9%98%B2%E7%81%AB%E5%A2%99"><span class="toc-number">7.</span> <span class="toc-text">关闭防火墙</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E4%B8%BB%E6%9C%BA%E5%90%8D-%E6%B0%B8%E4%B9%85"><span class="toc-number">8.</span> <span class="toc-text">修改主机名(永久)</span></a></li></ol></div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2020/12/04/hello-world/" title="Hello World"><img src="/img/default_cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/2020/12/04/hello-world/" title="Hello World">Hello World</a><time datetime="2020-12-04T02:08:18.212Z" title="发表于 2020-12-04 10:08:18">2020-12-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/11/16/%E5%A4%A7%E6%95%B0%E6%8D%AEspark%E7%AD%89%E7%BB%84%E4%BB%B6%E6%90%AD%E5%BB%BA-%E4%B8%89/" title="大数据spark等组件搭建(三)"><img src="/img/default_cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="大数据spark等组件搭建(三)"/></a><div class="content"><a class="title" href="/2020/11/16/%E5%A4%A7%E6%95%B0%E6%8D%AEspark%E7%AD%89%E7%BB%84%E4%BB%B6%E6%90%AD%E5%BB%BA-%E4%B8%89/" title="大数据spark等组件搭建(三)">大数据spark等组件搭建(三)</a><time datetime="2020-11-16T02:27:35.000Z" title="发表于 2020-11-16 10:27:35">2020-11-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/11/01/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BF%85%E7%9F%A5%E7%9A%84%E7%A1%AC%E6%A0%B8%E7%9F%A5%E8%AF%86%E5%A4%A7%E5%85%A8-%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86%E6%A6%82%E5%BF%B5/" title="程序员必知的硬核知识大全--计算机操作系统理论知识概念"><img src="/2020/11/01/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BF%85%E7%9F%A5%E7%9A%84%E7%A1%AC%E6%A0%B8%E7%9F%A5%E8%AF%86%E5%A4%A7%E5%85%A8-%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86%E6%A6%82%E5%BF%B5/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BF%85%E7%9F%A5%E7%9A%84%E7%A1%AC%E6%A0%B8%E7%9F%A5%E8%AF%86%E5%A4%A7%E5%85%A8-%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86%E6%A6%82%E5%BF%B5.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="程序员必知的硬核知识大全--计算机操作系统理论知识概念"/></a><div class="content"><a class="title" href="/2020/11/01/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BF%85%E7%9F%A5%E7%9A%84%E7%A1%AC%E6%A0%B8%E7%9F%A5%E8%AF%86%E5%A4%A7%E5%85%A8-%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86%E6%A6%82%E5%BF%B5/" title="程序员必知的硬核知识大全--计算机操作系统理论知识概念">程序员必知的硬核知识大全--计算机操作系统理论知识概念</a><time datetime="2020-11-01T11:27:55.000Z" title="发表于 2020-11-01 19:27:55">2020-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/10/03/jdk%E5%92%8CHadoop%E6%90%AD%E5%BB%BA-%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E4%B8%8B-%E4%BA%8C/" title="jdk和Hadoop搭建--普通用户下(二)"><img src="/2020/10/03/jdk%E5%92%8CHadoop%E6%90%AD%E5%BB%BA-%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E4%B8%8B-%E4%BA%8C/jdk%E5%92%8CHadoop%E6%90%AD%E5%BB%BA%E9%A6%96%E9%A1%B5.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="jdk和Hadoop搭建--普通用户下(二)"/></a><div class="content"><a class="title" href="/2020/10/03/jdk%E5%92%8CHadoop%E6%90%AD%E5%BB%BA-%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E4%B8%8B-%E4%BA%8C/" title="jdk和Hadoop搭建--普通用户下(二)">jdk和Hadoop搭建--普通用户下(二)</a><time datetime="2020-10-03T09:12:42.000Z" title="发表于 2020-10-03 17:12:42">2020-10-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/" title="在虚拟机中安装CentOS(一)"><img src="/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS7%E9%A6%96%E9%A1%B5.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在虚拟机中安装CentOS(一)"/></a><div class="content"><a class="title" href="/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/" title="在虚拟机中安装CentOS(一)">在虚拟机中安装CentOS(一)</a><time datetime="2020-10-02T07:49:37.000Z" title="发表于 2020-10-02 15:49:37">2020-10-02</time></div></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/2020/10/02/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS-%E4%B8%80/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%AE%89%E8%A3%85CentOS7%E9%A6%96%E9%A1%B5.jpg)"><div id="footer-wrap"><div class="copyright">&copy;2020 By Cai XianQuan</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,  welcome  to  my  <a  href="https://www.caixianquan.tk">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/js/bookmark.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/click-heart.min.js" async="async" mobile="true"></script></div></body></html>
