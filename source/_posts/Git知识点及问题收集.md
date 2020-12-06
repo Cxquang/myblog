@@ -73,7 +73,8 @@ git remote add origin 仓库地址
 
 # Git移除远程仓库【更换仓库】
 {% note primary %}
-git remote rm 远程仓库别名
+- 移除仓库
+git remote rm 远程仓库别名（如：origin）
 {% endnote %}
 
 # 服务端仓库无法即时检出更新
@@ -107,11 +108,56 @@ git checkout -f
 这样我们在本地再推送一次更新，可以在服务端查看，发现文件已经更新了，不用再手动检出更新了。
 
 # git无法push某个文件夹且没提示错误
-在commit、push hexo源文件时发现一切正常，登到服务器查看却缺少了themes下的Butterfly主题的资源，这个是从git上clone下来的，其中已经删除了.git和.gitignore等类似文件。但还是无法push上去，可以尝试一下命令：
+在commit、push hexo源文件时发现一切正常，登到服务器查看却缺少了themes下的Butterfly主题的资源，这个是从git上clone下来的，其中已经删除了.git和.gitignore、.github等类似文件夹。但还是无法push上去，可以尝试一下命令：
 {% note primary %}
- git rm --cached directory
+git rm --cached directory
+git add directory
 {% endnote %}
+注：directory为子文件夹的路径。【相对路径或绝对路径】
 该命令的directory必须是未push上去的文件夹，这里的示例为：themes/Butterfly.
 之后使用git status就可以看到未跟踪的文件夹了。
+
+{% note info %}
+但是执行git rm --cached directory时，提示
+
+fatal: Unable to create 'xx/.git/index.lock': File exists.
+执行`rm -f xx/.git/index.lock`后解决
+
+参考地址：[git 无法添加文件夹下文件](https://www.cnblogs.com/howdop/p/5583342.html)
+{% endnote %}
+
+{% note warning %}
+注：如果没有删除掉子git仓库中的.git等文件夹，在push时会报如下错误：
+![git仓库嵌套git仓库报错](1、git仓库嵌套git仓库报错.png)
+{% endnote %}
+
+# git强制拉取并覆盖本地代码
+```bash
+git fetch --all
+git reset --hard origin/master
+git pull
+```
+
+# 撤销本地修改【未提交】
+如果想要撤销此次本地修改并未提交，并且要恢复到上一次提交后的状态，包括工作区
+如果直接`git reset 版本号`恢复上一次提交，这会报如下错误：
+![恢复上一次提交](2、恢复上一次提交.png)
+这里是删除了这些文件，前面的D代表删除操作
+需要如下使用命令：
+```bash
+git add .
+git reset --hard
+```
+
+对删除文件进行状态监控，再恢复上次提交
+
+# 拒绝push
+![拒绝push](3、拒绝push.png)
+这是由于git默认拒绝了push操作，需要进行设置，修改【在服务器上的git仓库中】.git/config文件后面添加如下代码：
+```shell
+[receive]
+    denyCurrentBranch = ignore
+```
+重新git push即可
 
 
