@@ -1,11 +1,15 @@
 ---
-title: {{ title }}
-date: {{ date }}
+title: windows软件问题收集
+date: 2020-12-07 16:50:18
 tags:
+- windows软件
 categories:
+- windows
+- windows软件
 keywords:
-description: 
-cover:  
+- windows软件
+description: 总结在windows下使用的软件的各种问题及解决方法
+cover: /2020/12/07/windows软件问题收集/windows软件问题收集首页.jpg
 ---
 
 {% note info %}
@@ -43,7 +47,8 @@ katex	【可选】显示katex(当设置katex的per_page: false时，才需要配
 -- 插入链接
 {% link text url [external] [title] %}
 
---
-参考地址：[git 无法添加文件夹下文件](https://www.cnblogs.com/howdop/p/5583342.html)
 ```
 {% endnote %}
+
+# Sublime Text 3增加最近打开的文件数量（Windows）
+参考地址：[Text 3增加最近打开的文件数量（Windows）](https://www.jianshu.com/p/51400de20b0b)
