@@ -117,7 +117,13 @@ reprocess config line 38: Deprecated option RSAAuthentication
 {% endnote %}
 
 ## 普通账户下免密登录
-- 之前在root下已经生成了私钥和公钥，直接将公钥复制到普通账户下的.ssh目录下的authorized_keys文件下，如果没有该目录及文件则手动创建。
+- ~~之前在root下已经生成了私钥和公钥，直接将公钥复制到普通账户下的.ssh目录下的authorized_keys文件下，如果没有该目录及文件则手动创建。~~
+- <font color=red size=3>***上述方法有可能会报权限拒绝问题【使用私钥ssh连接】***</font>
+ 1. git bash中ssh连接时报如下错误：Permission denied (publickey,gssapi-keyex,gssapi-with-mic).
+ 2. 在xshell使用私钥连接时报错：所选的用户密钥未在远程主机上注册
+ 3. 登录目标服务器查看sshd日志信息，日志信息目录为，/var/log/secure，有如下错误：Jul 22 14:20:33 v138020.go sshd[4917]: Authentication refused: bad ownership or modes for directory /home/xinhailong
+ 4. 原因：sshd为了安全，对属主的目录和文件权限有所要求。如果权限不对，则ssh的免密码登陆不生效。用户目录权限为 755 或者 700，就是不能是77x。.ssh目录权限一般为755或者700。rsa_id.pub 及authorized_keys权限一般为644，rsa_id权限必须为600
+ 5. 如果是手动创建的.ssh和authorized_keys文件时就要安装以上重新配置权限即可。参考地址：[ssh免密码登陆设置时Authentication refused: bad ownership or modes错误解决方法](https://blog.csdn.net/kmhysoft/article/details/70432633)
 - 在本地windows下在使用ssh的客户端软件中修改配置文件，如git工具，在安装目录下有ssh的配置文件，如下：
 ![修改ssh客户端配置文件](1、修改ssh客户端配置文件.png)
 修改ssh_config文件两处地方【如果前有#注释，去掉】：
