@@ -2,48 +2,117 @@
 title: 大数据spark等组件搭建(三)
 date: 2020-11-16 10:27:35
 tags:
+- 组件部署
 categories:
 keywords:
-description:
-cover:
+- 组件部署
+description: 大数据各个组件部署安装总结
+cover: /2020/11/16/大数据spark等组件搭建-三/大数据spark等组件搭建-三首页.jpg
 ---
 
-{% note info %}
-```Text
---头部属性说明：
-title	【必需】文章标题【需要】
-date	【必需】文章创建日期【需要】
-tags	【可选】文章标签【需要】
-categories	【可选】文章分类【需要】
-keywords	【可选】文章关键字【需要，同标签】
-description	【可选】文章描述【需要】
-top_img	【可选】文章顶部图片
-cover	【可选】文章缩略图(如果没有设置top_img,文章页顶部将显示缩略图，可设为false/图片地址/留空)【需要，地址为：/年/月/日/文章生成的目录名/图片名称.后缀名】
-comments	【可选】显示文章评论模块(默认 true)
-toc	【可选】显示文章TOC(默认为设置中toc的enable配置)
-toc_number	【可选】显示
-toc_number	(默认为设置中toc的number配置)
-copyright	【可选】显示文章版权模块(默认 true)
-mathjax	【可选】显示mathjax(当设置mathjax的per_page: false时，才需要配置，默认 false)
-katex	【可选】显示katex(当设置katex的per_page: false时，才需要配置，默认 false)
+# Flink部署
+## Standalone模式
+### 安装
+1. 解压缩: flink-1.10.0-bin-scala_2.11.tgz，进入conf目录中。
+```shell
+tar -zxvf flink-1.10.0-bin-scala_2.11.tgz
+```
+2. 修改 flink-1.10.0/conf/flink-conf.yaml 文件：
+```shell
+jobmanager.rpc.address: hadoop101
+```
 
---标签外挂
-样式：
-[class] : default | primary | success | info | warning | danger.
-{% note info %}
-编辑内容
-{% endnote %}
+3. 修改 /conf/slaves文件：
+```shell
+hadoop101
+hadoop102
+hadoop103
+```
 
---图片插入示例：
-不显示描述，可以插入【舍弃不用】：
-{% asset_img example.png %}
-显示描述的：
-![example](example.png)	不用添加路径，直接填图片名称即可，将图片放入对应文件夹内
+4. 分发给另外两台机子：
+```shell
+xsync flink-1.10.0
+```
+5. 启动：
+```shell
+[root@hadoop101 ~]# /opt/module/flink-1.10.0/bin/start-cluster.sh 
+Starting cluster.
+Starting standalonesession daemon on host hadoop101.
+Starting taskexecutor daemon on host hadoop102.
+Starting taskexecutor daemon on host hadoop103.
+```
+![启动flink-Standalone模式](1、启动flink-Standalone模式.png)
+访问http://hadoop101:8081可以对flink集群和任务进行监控管理。
+![Flink集群管理页面](2、Flink集群管理页面.png)
 
--- 插入链接
-{% link text url [external] [title] %}
+6. 执行自带例子：
+```shell
+/opt/module/flink-1.10.0/bin/flink run   /opt/module/flink-1.10.0/examples/batch/WordCount.jar
+```
 
-强调模板：<font color=red size=3>***（提示：机器学习最好要看一下《数学之美》这本书）***</font>
+## Flink on yarn模式
+参考例子：[Flink On Yarn安装部署笔记（flink-1.10.0，Hadoop2.10.1）](https://www.cnblogs.com/quchunhui/p/12463455.html)
+### 设置环境变量
+```shell /etc/profile
+#hadoop需要增加如下环境变量,可能会报错误： java.lang.ClassNotFoundException: org.apache.hadoop.yarn.exceptions.YarnException
+export HADOOP_CONF_DIR=/opt/module/hadoop-2.7.2/etc/hadoop
+export HADOOP_CLASSPATH=`hadoop classpath`
+
+#FLINK_HOME
+export FLINK_HOME=/opt/module/flink-1.10.0
+export PATH=$PATH:$FLINK_HOME/bin
+```
+分发到其他节点并source该文件
+
+### 导入对应flink集成对应的hadoop的jar包
+要操作hdfs的话，必须要在flink安装目录的 lib 下加上额外的jar包
+参考地址：https://ci.apache.org/projects/flink/flink-docs-release-1.8/release-notes/flink-1.8.html
+测试集群hadoop为2.7.2，对应jar包为：flink-shaded-hadoop-2-uber-2.7.5-10.0.jar
+下载地址：https://repo.maven.apache.org/maven2/org/apache/flink/flink-shaded-hadoop-2-uber/2.7.5-10.0/flink-shaded-hadoop-2-uber-2.7.5-10.0.jar
+
+将该jar包导入到各个节点的flink的lib目录下
+
+### yarn-site.xml配置
+```shell  增加配置
+<property>
+<name>yarn.nodemanager.resource.memory-mb</name>
+<value>10240</value>
+</property>
+
+<property>
+<name>yarn.scheduler.minimum-allocation-mb</name>
+<value>1024</value>
+</property>
+
+<property>
+<name>yarn.scheduler.maximum-allocation-mb</name>
+<value>10240</value>
+</property>
+
+<!-- 是否启动一个线程检查每个任务正使用的虚拟内存量，如果任务超出分配值，则直接将其杀掉，默认是true。由于使用虚拟机内存不够可能会报错，所以不启动 -->
+<property>
+<name>yarn.nodemanager.vmem-check-enabled</name>
+<value>false></value>
+</property>
+
+<!-- 任务每使用1MB物理内存，最多可使用虚拟内存量 -->
+<property>
+<name>yarn.nodemanager.vmem-pmem-ratio</name>
+<value>4</value>
+</property>
 
 ```
-{% endnote %}
+
+### 启动
+启动组件顺序：zookeeper集群【如果有】，hadoop 集群，历史服务器，Flink集群
+
+
+
+
+![example](example.png)
+![example](example.png)
+![example](example.png)
+![example](example.png)
+![example](example.png)
+![example](example.png)
+![example](example.png)

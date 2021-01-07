@@ -110,18 +110,18 @@ usermod  -l  新用户名  -d  /home/新用户名  -m  老用户名   （英文L
 {% endnote %}
 
 1. VirtualBox中有4中网络连接方式:
- - NAT 
- - Bridged Adapter 
- - Internal 
- - Host-only Adapter
+    - NAT 
+    - Bridged Adapter
+    - Internal 
+    - Host-only Adapter
 ![四种网络连接方式](28、四种网络连接方式.png)
 参考地址：https://blog.csdn.net/java_zjh/article/details/81147572
 
 ## NAT
 1. NAT：Network Address Translation，网络地址转换
 2. NAT模式是最简单的实现虚拟机上网的方式，你可以这样理解：
- - Guest访问网络的所有数据都是由主机提供的，Guest并不真实存在于网络中，主机与网络中的任何机器都不能查看和访问到Guest的存在。
- - Guest可以访问主机能访问到的所有网络，但是对于主机以及主机网络上的其他机器，Guest又是不可见的，甚至主机也访问不到Guest。
+    - Guest访问网络的所有数据都是由主机提供的，Guest并不真实存在于网络中，主机与网络中的任何机器都不能查看和访问到Guest的存在。
+    - Guest可以访问主机能访问到的所有网络，但是对于主机以及主机网络上的其他机器，Guest又是不可见的，甚至主机也访问不到Guest。
 3. 虚拟机与主机的关系：只能单向访问，虚拟机可以通过网络访问到主机，主机无法通过网络访问到虚拟机。
 4. 虚拟机与网络中其他主机的关系：只能单向访问，虚拟机可以访问到网络中其他主机，其他主机不能通过网络访问到虚拟机。
 5. 虚拟机与虚拟机的关系：相互不能访问，虚拟机与虚拟机各自完全独立，相互间无法通过网络访问彼此。
@@ -141,7 +141,7 @@ usermod  -l  新用户名  -d  /home/新用户名  -m  老用户名   （英文L
 - 虚拟机与网络中其他主机的关系：不能相互访问，理由同上。
 - 虚拟机与虚拟机的关系：可以相互访问，前提是在设置网络时，两台虚拟机设置同一网络名称。如上配置图中，名称为intnet。
 
-##、Host-only Adapter（主机模式）
+## Host-only Adapter（主机模式）
 
 - 主机模式，这是一种比较复杂的模式，需要有比较扎实的网络基础知识才能玩转。可以说前面几种模式所实现的功能，在这种模式下，通过虚拟机及网卡的设置都可以被实现。
 - 我们可以理解为Guest在主机中模拟出一张专供虚拟机使用的网卡，所有虚拟机都是连接到该网卡上的，我们可以通过设置这张网卡来实现上网及其他很多功能，比如（网卡共享、网卡桥接等）。
@@ -307,7 +307,10 @@ rtt min/avg/max/mdev = 67.903/152.540/237.178/84.638 ms
 ```
 
 ## 主机模式+共享网络
-参考地址：[VMware虚拟机三种网络模式详解 ---------Host-Only（仅主机模式）](https://blog.csdn.net/sunweixiang1002/article/details/84679928)
+{% note primary %}
+<font color=red size=3>**访问外网不太稳定，推荐还是使用Host-Only+NAT模式**</font>
+{% endnote %}
+~~参考地址[已失效]：[VMware虚拟机三种网络模式详解 ---------Host-Only（仅主机模式）](https://blog.csdn.net/sunweixiang1002/article/details/84679928)~~
 1. 主机模式配置和上述相同，这里配置共享网络
 ![共享网络设置](42、共享网络设置.png)
 2. 可以看到上图有一个提示，强制将VMware Network Adapter VMnet1的ip设置成192.168.137.1
@@ -316,6 +319,12 @@ rtt min/avg/max/mdev = 67.903/152.540/237.178/84.638 ms
 <font color=red size=3>**要设置网关和DNS，与VMware Network Adapter VMnet1的IP相同**</font>
 ![重新设置虚拟机ip](44、重新设置虚拟机ip.png)
 ![能够与主机通信并且ping通外网](45、能够与主机通信并且ping通外网.png)
+
+{% note danger %}
+如果还是无法ping通外网，需要查看：管理——>主机网络管理器中的虚拟网卡的ip地址设置
+![检查主机网络管理器中的ip](46、检查主机网络管理器中的ip.png)
+该ip地址必须与当前主机的虚拟网卡的主机是一样的，由于是共享网络，所以虚拟网卡会默认分配到192.168.137.1
+{% endnote %}
 
 # 关闭防火墙
 {% note primary %}
