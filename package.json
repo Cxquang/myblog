@@ -11,7 +11,7 @@
     "d": "hexo clean &&  hexo g -d && git status && git add -A && git commit -m 'auto' && git push"
   },
   "hexo": {
-    "version": "5.2.0"
+    "version": "5.3.0"
   },
   "dependencies": {
     "hexo": "^5.0.0",
