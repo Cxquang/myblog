@@ -104,7 +104,7 @@ theme: butterfly
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git  #必须为git
-  repo: https://github.com/Cxquang/hexo_blog.git #https://gitee.com/Xquan123/hexo.git #caixianquan@www.caixianquan.tk:/home/caixianquan/repos/blog.git  #Git仓库
+  repo: https://github.com/Cxquang/hexo.git #https://gitee.com/Xquan123/hexo.git #caixianquan@www.caixianquan.tk:/home/caixianquan/repos/blog.git  #Git仓库
   branch: master #分支
 
 #图片懒加载
