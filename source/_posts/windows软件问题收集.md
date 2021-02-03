@@ -51,7 +51,27 @@ katex	【可选】显示katex(当设置katex的per_page: false时，才需要配
 {% endnote %}
 
 # Sublime Text 3增加最近打开的文件数量（Windows）
-参考地址：[Text 3增加最近打开的文件数量（Windows）](https://www.jianshu.com/p/51400de20b0b)
+1. 参考地址：[Text 3增加最近打开的文件数量（Windows）](https://www.jianshu.com/p/51400de20b0b)
+
+## 具体步骤
+1. 找到Sublime Text 3安装目录下的`Default.sublime-package`文件，在我电脑上的路径为：`D:\Program Files\Sublime Text 3\Packages\Default.sublime-package`，复制一份该文件，把文件扩展名改为`zip`，比如改为：`Default.zip`。
+
+![sublimetext3目录](1、sublimetext3目录.png)
+
+2. 解压该zip文件，在解压出的目录中找到文件`Main.sublime-menu`，用文本编辑器打开：
+
+![Main.sublime-menu](2、Main.sublime-menu.png)
+
+
+
+3. 找到如图所示的文本，增加几行`{ "command": "open_recent_file", "args": {"index": n } },`。
+![增加command](3、增加command.png)
+
+4. 例如把最近打开的文件和文件夹数量都改为15：
+![增加15条记录](4、增加15条记录.png)
+
+5. 保存修改的文件`Main.sublime-menu`，找到`Sublime Text 3`的配置文件目录，在我电脑为`C:\Users\zhangchao\AppData\Roaming\Sublime Text 3\Packages\`，新建文件夹Default，把修改后的`Main.sublime-menu`文件复制到Default目录中即可。
+![复制到Default目录](5、复制到Default目录.png)
 
 # Chrome神器Vimium快捷键学习记录
 j: 向下移动。

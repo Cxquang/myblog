@@ -488,6 +488,57 @@ Flink运行时架构主要包括四个不同的组件，它们会在运行流处
 	- Dispatcher也会启动一个Web UI，用来方便地展示和监控作业执行的信息。
 	- Dispatcher在架构中可能并不是必需的，这取决于应用提交运行的方式。
 
+## 任务提交流程（独立集群）
+![独立集群的任务提交流程](9、独立集群的任务提交流程.png)
+1. 程序的并行度设置为10，那么并行任务的数量就是10，作业管理器就会向资源管理器请求10个任务槽
+![yarn形式的任务提交流程](10、yarn形式的任务提交流程.png)
+![任务调度原理](11、任务调度原理.png)
+![TaskManager和Slots](12、TaskManager和Slots.png)
+1. Flink中每一个TaskManager都是一个JVM进程，每一个任务插槽都会启动一个线程，它可能会在独立的线程上执行一个或多个子任务【顺序执行】，每一个子任务占用一个任务插槽（Task slot）
+2. 为了控制一个TaskManager能接收多少个task，TaskManager通过task slot 来进行控制（一个TaskManager至少有一个slot）
+3. 默认情况下，Flink允许子任务共享slot，即使它们是不同任务的子任务。 这样的结果是，一个slot可以保存作业的整个管道。
+4. Task Slot是静态的概念，是指TaskManager具有的并发执行能力 
+![任务槽数量示例](13、任务槽数量示例.png)
+- flink-conf.yaml中配置的任务槽是一个taskmanager有3个slot，而代码中的并行度设置为1，那么任务就只会启动一个slot来执行任务，而设置为2时，那么每一个算子就会在两个slot中执行
+![任务槽占满例子](14、任务槽占满例子.png)
+- 而如果设置并行度为9，那么三个taskmanager中的三个任务槽都会被占用执行
+- 可以单独设置不同算子的并行度，比如sink设置为1，如Example4
+- taskmanager安装在几个节点上就会启动多少个taskmanager进程，即可认为是节点的数量
+
+## 程序与数据流（DataFlow）
+![程序与数据流](15、程序与数据流.png)
+1. 所有的Flink程序都是由三部分组成的：  Source 、Transformation 和 Sink。
+2. Source 负责读取数据源，Transformation 利用各种算子进行处理加工，Sink 负责输出
+3. 在运行时，Flink上运行的程序会被映射成“逻辑数据流”（dataflows），它包含了这三部分
+4. 每一个dataflow以一个或多个sources开始以一个或多个sinks结束。dataflow类似于任意的有向无环图（DAG）
+5. 在大部分情况下，程序中的转换运算（transformations）跟dataflow中的算子（operator）是一一对应的关系
+![数据流有向无环图](16、数据流有向无环图.png)
+
+## 执行图（ExecutionGraph）
+1. Flink中的执行图可以分成四层：StreamGraph -> JobGraph -> ExecutionGraph -> 物理执行图
+2. StreamGraph：是根据用户通过 Stream API编写的代码生成的最初的图。用来表示程序的拓扑结构。
+3. JobGraph：StreamGraph在编译的阶段经过优化后生成了 JobGraph，提交给 JobManager 的数据结构。主要的优化为，将多个符合条件的节点 chain 在一起作为一个节点
+4. ExecutionGraph：JobManager 根据 JobGraph 生成ExecutionGraph。ExecutionGraph是JobGraph的并行化版本，是调度层最核心的数据结构。
+5. 物理执行图：JobManager根据ExecutionGraph对Job进行调度后，在各个TaskManager上部署Task后形成的“图”，并不是一个具体的数据结构。
+![执行图转换](17、执行图转换.png)
+
+## 并行度（Parallelism）
+![并行度](18、并行度.png)
+1. 一个特定算子的子任务（subtask）的个数被称之为其并行度（parallelism）。一般情况下，一个stream的并行度，可以认为就是其所有算子中最大的并行度。
+2. 程序设置的并行度要小于或等于配置文件中设置的所有taskmanager的slot数量，否则程序会报错。
+
+## 任务链（Operator Chains）
+1. Flink采用了一种称为任务链的优化技术，可以在特定条件下减少本地通信的开销。为了满足任务链的要求，必须将两个或多个算子设为相同的并行度，并通过本地转发（local forward）的方式进行连接
+2. 相同并行度的one-to-one操作，Flink这样相连的算子链接在一起形成一个task，原来的算子成为里面的subtask
+3. <font color=red size=3>***并行度相同、并且是 one-to-one 操作，两个条件缺一不可***</font>
+![任务链](19、任务链.png)
+
+#
+
+![example](example.png)
+![example](example.png)
+![example](example.png)
+![example](example.png)
 
 
 

@@ -138,8 +138,10 @@ tar
 压缩：tar Zcvf FileName.tar.Z DirName
 
 .zip
-解压：unzip FileName.zip
-压缩：zip FileName.zip DirName
+#将FileName.zip解压到指定目录/home/html/下
+解压：unzip -d /home/html/ FileName.zip
+#将 /home/html/ 这个目录下所有文件和文件夹打包为当前目录下的 html.zip：
+压缩：zip -q -r html.zip /home/html/
 .rar
 解压：rar x FileName.rar
 压缩：rar a FileName.rar DirName 
