@@ -824,9 +824,9 @@ fragment_cache: true
 inject:
   head:
     # - <link rel="stylesheet" href="/xxx.css">
-    - <link rel="stylesheet" href="/css/VolantisTags.css">
+    - <link rel="stylesheet" href="/myblog/css/VolantisTags.css">
   bottom:
-    - <script src="/js/bookmark.js"></script>
+    - <script src="/myblog/js/bookmark.js"></script>
 
 # CDN
 # Don't modify the following settings unless you know how they work
