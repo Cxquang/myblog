@@ -8,7 +8,7 @@
     "deploy": "hexo deploy",
     "server": "hexo server",
     "start": "hexo clean && hexo g && hexo s",
-    "d": "git checkout master && hexo clean &&  hexo g -d && git add -A && git commit -m 'auto' && git checkout hexoSource",
+    "d": "git checkout master && hexo clean &&  hexo g -d && git add -A && git commit -m 'auto' && git checkout hexoSource && git merge master",
     "t": "git checkout hexoSource"
   },
   "hexo": {
