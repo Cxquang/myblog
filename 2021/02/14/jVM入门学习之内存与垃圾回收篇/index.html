@@ -1,0 +1,277 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>jVM入门学习之内存与垃圾回收篇 | Cquang博客</title><meta name="keywords" content="JVM,大数据,Java"><meta name="author" content="Cai XianQuan"><meta name="copyright" content="Cai XianQuan"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="学习JVM从入门到精通视频总结知识笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jVM入门学习之内存与垃圾回收篇">
+<meta property="og:url" content="https://cxquang.github.io/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/index.html">
+<meta property="og:site_name" content="Cquang博客">
+<meta property="og:description" content="学习JVM从入门到精通视频总结知识笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cxquang.github.io/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E9%A6%96%E9%A1%B5.png">
+<meta property="article:published_time" content="2021-02-14T15:22:30.000Z">
+<meta property="article:modified_time" content="2021-04-17T18:18:01.000Z">
+<meta property="article:author" content="Cai XianQuan">
+<meta property="article:tag" content="JVM">
+<meta property="article:tag" content="大数据">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cxquang.github.io/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E9%A6%96%E9%A1%B5.png"><link rel="shortcut icon" href="/myblog/img/favicon1.png"><link rel="canonical" href="https://cxquang.github.io/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myblog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web"><script>var GLOBAL_CONFIG = { 
+  root: '/myblog/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'mediumZoom',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: true,
+  isToc: true,
+  postUpdate: '2021-04-18 02:18:01'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><link rel="stylesheet" href="/myblog/css/VolantisTags.css"><meta name="generator" content="Hexo 5.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/myblog/img/%E5%A4%B4%E5%83%8F.gif" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/myblog/archives/"><div class="headline">文章</div><div class="length-num">25</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/myblog/tags/"><div class="headline">标签</div><div class="length-num">38</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/myblog/categories/"><div class="headline">分类</div><div class="length-num">21</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myblog/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 享受时光</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/myblog/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li></ul></div></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/myblog/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E9%A6%96%E9%A1%B5.png)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/myblog/">Cquang博客</a></span><span id="menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myblog/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 享受时光</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/myblog/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li></ul></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">jVM入门学习之内存与垃圾回收篇</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-02-14T15:22:30.000Z" title="发表于 2021-02-14 23:22:30">2021-02-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-04-17T18:18:01.000Z" title="更新于 2021-04-18 02:18:01">2021-04-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myblog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/">大数据学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myblog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/JVM%E5%AD%A6%E4%B9%A0/">JVM学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myblog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/JVM%E5%AD%A6%E4%B9%A0/%E5%B0%9A%E7%A1%85%E8%B0%B7-JVM%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A/">尚硅谷--JVM从入门到精通</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><div class="note info flat"><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">--头部属性说明：</span><br><span class="line">title	【必需】文章标题【需要】</span><br><span class="line">date	【必需】文章创建日期【需要】</span><br><span class="line">tags	【可选】文章标签【需要】</span><br><span class="line">categories	【可选】文章分类【需要】</span><br><span class="line">keywords	【可选】文章关键字【需要，同标签】</span><br><span class="line">description	【可选】文章描述【需要】</span><br><span class="line">top_img	【可选】文章顶部图片</span><br><span class="line">cover	【可选】文章缩略图(如果没有设置top_img,文章页顶部将显示缩略图，可设为false/图片地址/留空)【需要，地址为：/年/月/日/文章生成的文件夹名/图片名称.后缀名】</span><br><span class="line">comments	【可选】显示文章评论模块(默认 true)</span><br><span class="line">toc	【可选】显示文章TOC(默认为设置中toc的enable配置)</span><br><span class="line">toc_number	【可选】显示</span><br><span class="line">toc_number	(默认为设置中toc的number配置)</span><br><span class="line">copyright	【可选】显示文章版权模块(默认 true)</span><br><span class="line">mathjax	【可选】显示mathjax(当设置mathjax的per_page: false时，才需要配置，默认 false)</span><br><span class="line">katex	【可选】显示katex(当设置katex的per_page: false时，才需要配置，默认 false)</span><br><span class="line"></span><br><span class="line">--标签外挂</span><br><span class="line">样式：</span><br><span class="line">[class] : default | primary | success | info | warning | danger.</span><br><span class="line">&#123;% note info %&#125;</span><br><span class="line">编辑内容</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">--图片插入示例：</span><br><span class="line">不显示描述，可以插入【舍弃不用】：</span><br><span class="line">&#123;% asset_img example.png %&#125;</span><br><span class="line">显示描述的：</span><br><span class="line">![example](example.png)	不用添加路径，直接填图片名称即可，将图片放入对应文件夹内</span><br><span class="line"></span><br><span class="line">-- 插入链接</span><br><span class="line">&#123;% link text url [external] [title] %&#125;</span><br><span class="line"></span><br><span class="line">--</span><br><span class="line">参考地址：[git 无法添加文件夹下文件](https://www.cnblogs.com/howdop/p/5583342.html)</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="JVM与Java体系结构"><a href="#JVM与Java体系结构" class="headerlink" title="JVM与Java体系结构"></a>JVM与Java体系结构</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><ol>
+<li>基于JDK1.8，该版本为LTS，长期支持</li>
+<li>JVM在实际开发中处于底层，基于JVM运行程序<br><img src="1%E3%80%81JVM%E4%B8%8E%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%85%B3%E7%B3%BB.png" alt="JVM与应用程序的关系"></li>
+<li>如何看待上层框架<ul>
+<li>SSM、微服务等上层技术才是重点，基础技术并不重要–本末倒置</li>
+<li>核心类库的API比作数学公式，Java虚拟机的知识好比公式的推导过程</li>
+</ul>
+</li>
+<li>中高级程序员必备技能<ul>
+<li>项目管理、调优的需要</li>
+<li>追求极客的精神，比如垃圾回收算法、JIT、底层原理</li>
+</ul>
+</li>
+<li>参考书籍<br><img src="2%E3%80%81%E5%8F%82%E8%80%83%E4%B9%A6%E7%B1%8D.png" alt="参考书籍"></li>
+<li>主要以HotSpot(TM)为代表学习</li>
+<li>java–跨平台语言，write once ，run anywhere<br><img src="3%E3%80%81%E8%B7%A8%E5%B9%B3%E5%8F%B0%E8%AF%AD%E8%A8%80.png" alt="跨平台语言"></li>
+<li>JVM–跨语言的平台<br><img src="4%E3%80%81%E8%B7%A8%E8%AF%AD%E8%A8%80%E7%9A%84%E5%B9%B3%E5%8F%B0.png" alt="跨语言的平台"></li>
+<li><font color=red size=3><strong><em>Java不是最强大的语言，但是JVM是最强大的虚拟机</em></strong></font></li>
+<li>java字节码指的是用java语言编译成的字节码。任何能在JVM平台上执行的字节码格式都是一样的，所以可以统称为JVM字节码</li>
+<li>虚拟机<ul>
+<li>visual box，vmare属于系统虚拟机，<font color=red size=3><strong><em>完全是对物理计算机的仿真</em></strong></font></li>
+<li>Java虚拟机，<font color=red size=3><strong><em>专门为执行单个计算程序而设计，在Java虚拟机中执行的指令称为Java字节码指令</em></strong></font></li>
+</ul>
+</li>
+</ol>
+<h2 id="Java虚拟机"><a href="#Java虚拟机" class="headerlink" title="Java虚拟机"></a>Java虚拟机</h2><ol>
+<li>作用：二进制字节码的运行环境</li>
+<li>特点：一次编译，到处运行；自动内存管理，自动垃圾回收功能</li>
+<li>JVM的位置<br><img src="5%E3%80%81JVM%E7%9A%84%E4%BD%8D%E7%BD%AE.png" alt="JVM的位置"><br><img src="6%E3%80%81JDK%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84.png" alt="JDK体系架构"></li>
+</ol>
+<h2 id="JVM的整体结构"><a href="#JVM的整体结构" class="headerlink" title="JVM的整体结构"></a>JVM的整体结构</h2><p><img src="7%E3%80%81JVM%E7%9A%84%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.png" alt="JVM的整体架构"><br><img src="8%E3%80%81JVM%E6%9E%B6%E6%9E%84%E8%AF%A6%E7%BB%86%E5%9B%BE%E8%8B%B1.jpg" alt="JVM架构详细图英文版"><br><img src="8%E3%80%81JVM%E6%9E%B6%E6%9E%84%E8%AF%A6%E7%BB%86%E5%9B%BE%E4%B8%AD.jpg" alt="JVM架构详细图中文版"></p>
+<div class="note primary flat"><p>上述为JVM的简图和详细图，熟记后方便于理解JVM原理</p>
+</div>
+<ol>
+<li>多线程共享方法区和堆，每个线程自己拥有一份虚拟机栈（Java栈）、本地方法栈，程序计数器</li>
+<li>执行引擎分为解释器、JIT即时编译器（后端编译器，将字节码文件的字节码指令编译成机器指令，并将反复用到的机器指令缓存到内存中。class文件编译器为前端编译器），垃圾回收器三个部分，执行引擎实际就是将class字节码文件翻译成机器能够识别的机器语言文件</li>
+<li>Java代码执行流程<br><img src="9%E3%80%81Java%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.png" alt="Java代码执行流程"></li>
+</ol>
+<h2 id="JVM的架构模型"><a href="#JVM的架构模型" class="headerlink" title="JVM的架构模型"></a>JVM的架构模型</h2><ol>
+<li>Java编译器的指令集<ul>
+<li>基于<font color=red size=3><strong><em>栈的指令集架构</em></strong></font><ul>
+<li>设计和实现简单，适用于资源受限的系统</li>
+<li>避开了寄存器的分配难题：使用零地址指令方式分配</li>
+<li>指令流中的指令大部分是零地址指令，其执行过程依赖于操作栈。指令集更小【8位】，编译器容易实现</li>
+<li>不需要硬件支持，可移植性更好，更好<font color=red size=3><strong><em>实现跨平台</em></strong></font></li>
+</ul>
+</li>
+<li>基于<font color=red size=3><strong><em>寄存器的指令集架构</em></strong></font><ul>
+<li>典型的应用是x86的二进制指令集：比如传统的PC以及Android的Davlik虚拟机</li>
+<li><font color=red size=3><strong><em>指令集架构则完全依赖硬件，可移植性差</em></strong></font></li>
+<li><font color=red size=3><strong><em>性能优秀和执行更高效</em></strong></font></li>
+<li>花费更少的指令去完成一项操作【16位指令集】</li>
+<li>在大部分情况下，基于寄存器架构的指令集往往都是以一地址指令、二地址指令和三地址指令为主，而基于栈式架构的指令集确实以零地址指令为主。<br><img src="10%E3%80%81%E4%B8%A4%E7%A7%8D%E6%8C%87%E4%BB%A4%E9%9B%86%E6%9E%B6%E6%9E%84%E4%B8%BE%E4%BE%8B%E8%AF%B4%E6%98%8E.png" alt="两种指令集架构举例说明"></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="JVM的生命周期"><a href="#JVM的生命周期" class="headerlink" title="JVM的生命周期"></a>JVM的生命周期</h2><ol>
+<li>虚拟机的启动<ul>
+<li>Java虚拟机的启动是通过引导类加载器（bootstrap class loader）创建一个初始类（initial class）来完成，这个类是由虚拟机的具体实现指定。</li>
+</ul>
+</li>
+<li>虚拟机的执行<ul>
+<li>一个运行中的Java虚拟机有着一个清晰的任务：执行Java 程序。</li>
+<li>程序开始执行时他才运行，程序结束时他就停止。</li>
+<li><font color=red size=3><strong><em>执行一个所谓的Java程序的时候，真真正正在执行的是一个叫做Java虚拟机的进程。</em></strong></font></li>
+</ul>
+</li>
+<li>虚拟机的退出<ul>
+<li>程序正常执行结束</li>
+<li>程序在执行过程中遇到了异常或错误而异常终止</li>
+<li>由于操作系统出现错误而导致Java虚拟机进程终止</li>
+<li>某线程调用 Runtime=类或 System类的exit方法，或 Runtime类的halt方法，并且Java安全管理器也允许这次exit或halt操作</li>
+<li>除此之外，JNI( Java Native Interface)规范描述了用JNI Invocation API来加载或卸载Java虚拟机时，Java虚拟机的退出情况。</li>
+</ul>
+</li>
+</ol>
+<h2 id="JVM发展历程"><a href="#JVM发展历程" class="headerlink" title="JVM发展历程"></a>JVM发展历程</h2><ol>
+<li>第一款商用Java虚拟机–Sun Classic VM虚拟机，1.4版本被淘汰，只提供解释器，效率低下，逐行解释</li>
+<li>现在的执行引擎是解释器和JIT编译器同时工作，好比从A点到B点，JIT将字节码翻译成机器指令需要时间，就相当于等公交车，而解释器是逐行解释直接运行，好比做步行，那么换乘时需要等公交车，可以走一段到下个站点就可以坐公交，这样效率就高很多</li>
+<li>Exact VM , jdk1.2  Exact Memory  Management:准确式内存管理，可以知道内存中某个位置的数据具体是什么类型<ul>
+<li>具备现代高性能虚拟机的雏形：（1）热点探测；（2）编译器与解释器混合工作模式</li>
+</ul>
+</li>
+<li>HotSpot,JDK1.3,默认虚拟机<ul>
+<li>独有的方法区概念</li>
+<li>名称中的 Hot Spot指的就是它的热点代码探测技术。</li>
+<li>通过计数器找到最具编译价值代码，触发即时编译或栈上替换</li>
+<li>通过编译器与解释器协同工作，在最优化的程序响应时间与最佳执行性能中取得平衡</li>
+</ul>
+</li>
+<li>BEA JRockit,专注于服务器端应用<ul>
+<li>它可以不太关注程戶启动速度，因此 Jrockit内部不包含解析器实现，全部代码都靠即时编译器编译后执行。</li>
+<li>大量的行业基准测试显示， <font color=red size=3><strong><em>Jrockit JVM是世界上最快的JVM.</em></strong></font></li>
+<li>使用 Jrockit产品，客户已经体验到了显著的性能提高(一些超过了70%)和硬件成本的减少(达50%).</li>
+<li>优势：全面的Java运行时解决方案组合</li>
+<li>Jrockiti面向延迟敏感型应用的解决方案 Jrockit Rea1Time提供以毫秒或微秒级的JM响应时间，适合财务、军事指挥、电信网络的需要Missioncontro1服务套件，它是一组以极低的开销来监控、管理和分析生产<br>环境中的应用程序的工具。</li>
+<li>2008年，BEA被Orac1e收购</li>
+<li>Oracle表达了整合两大优秀虛拟机的工作，大致在JDK8中完成。整合的方式是在Hotspotl的基础上，移植 Jrockitl的优秀特性</li>
+</ul>
+</li>
+<li>IBM J9<ul>
+<li>全称： IBM Technology for Java Virtual Machine,简称IT4J,内部代号：J9</li>
+<li>市场定位与 Hotspot接近，服务器端、桌而应用、嵌入式等多用途VM</li>
+<li>广泛用于IBM的各种Java产品</li>
+<li>目前，<font color=red size=3><strong><em>有影响力的三大商用虚拟机之一</em></strong></font>，也号称是世界上最快的Java虚拟机(在IBM自己的产品上，通用性不如JRockit)。</li>
+<li>2017年左右，エBM发布了开源J9 VM,命名为 Open9,交给Ec1ipse基金会管理，也称为Ec1ipse OpenJ9</li>
+</ul>
+</li>
+<li>TaobaoJVM<ul>
+<li>由A1iJVM团队发布。阿里，国内使用Java最强大的公司，覆盖云计算、金融、物流、电商等众多领域。</li>
+<li>基于 OpenJDK开发了自己的定制版本AliibabaJDK,简称AJDK。是整个阿里Java体系的基石</li>
+<li>基于 OPENJDK Hotspot VM发布的国内第一个优化、<font color=red size=3><strong><em>深度定制且开源的高性能服务器</em></strong></font>版Java虚拟机。</li>
+<li>创新的GCIH( GC invisible heap)技术实现了off-heap,<font color=red size=3><strong><em>即将生命周期较长的Java对象从heap中移到heap之外，并且GC不能管理GCIH内部的Java对象，以此达到降低GC的回收频率和提升GC的回收效率的目的。</em></strong></font></li>
+<li>GCIH中的<font color=red size=3><strong><em>对象还能够在多个Java虚拟机进程中实现共享</em></strong></font></li>
+<li>使用crc32指令实现 JVM intrinsic降低JNI的调用开销</li>
+<li>PMU hardware的 Java profiling too1和诊断协助功能</li>
+<li>针对大数据场景的ZenGC</li>
+<li>taobao vm应用在阿里产品上性能高，硬件严重依赖 intel的cpu,损失了兼容性，但提高了性能</li>
+<li>目前己经在淘宝、天猫上线，把 oracle官方JWM版本全部替换了。</li>
+</ul>
+</li>
+</ol>
+<h2 id="类加载子系统"><a href="#类加载子系统" class="headerlink" title="类加载子系统"></a>类加载子系统</h2><p><img src="example.png" alt="example"><br><img src="example.png" alt="example"><br><img src="example.png" alt="example"><br><img src="example.png" alt="example"><br><img src="example.png" alt="example"><br><img src="example.png" alt="example"><br><img src="example.png" alt="example"><br><img src="example.png" alt="example"><br><img src="example.png" alt="example"><br><img src="example.png" alt="example"><br><img src="example.png" alt="example"><br><img src="example.png" alt="example"><br><img src="example.png" alt="example"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Cai XianQuan</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://cxquang.github.io/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/">https://cxquang.github.io/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://cxquang.github.io" target="_blank">Cquang博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myblog/tags/JVM/">JVM</a><a class="post-meta__tags" href="/myblog/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a><a class="post-meta__tags" href="/myblog/tags/Java/">Java</a></div><div class="post_share"><div class="social-share" data-image="/myblog/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E9%A6%96%E9%A1%B5.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myblog/2021/03/01/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%9B%BE%E8%A7%A3%E7%BD%91%E7%BB%9C/"><img class="prev-cover" src="/myblog/2021/03/01/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%9B%BE%E8%A7%A3%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%9B%BE%E8%A7%A3%E7%BD%91%E7%BB%9C.jpg" onerror="onerror=null;src='/myblog/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">计算机网络--图解网络</div></div></a></div><div class="next-post pull-right"><a href="/myblog/2021/01/29/%E6%A1%86%E6%9E%B6%E5%A5%97%E8%B7%AF%E8%A7%A3%E7%AE%97%E6%B3%95/"><img class="next-cover" src="/myblog/2021/01/29/%E6%A1%86%E6%9E%B6%E5%A5%97%E8%B7%AF%E8%A7%A3%E7%AE%97%E6%B3%95/%E6%A1%86%E6%9E%B6%E5%A5%97%E8%B7%AF%E8%A7%A3%E7%AE%97%E6%B3%95%E9%A6%96%E9%A1%B5.jpg" onerror="onerror=null;src='/myblog/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">框架套路解算法</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a href="/myblog/2020/12/08/kafka入门学习/" title="kafka入门学习"><img class="cover" src="/myblog/2020/12/08/kafka%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0/kafka%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E9%A6%96%E9%A1%B5.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-08</div><div class="title">kafka入门学习</div></div></a></div><div><a href="/myblog/2020/12/13/Flink入门学习/" title="Flink入门学习"><img class="cover" src="/myblog/2020/12/13/Flink%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0/Flink%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E9%A6%96%E9%A1%B5.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-13</div><div class="title">Flink入门学习</div></div></a></div><div><a href="/myblog/2020/08/08/尚硅谷大数据之Spark基础解析-一/" title="尚硅谷大数据之Spark基础解析(一)"><img class="cover" src="/myblog/2020/08/08/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8BSpark%E5%9F%BA%E7%A1%80%E8%A7%A3%E6%9E%90-%E4%B8%80/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8BSpark%E5%9F%BA%E7%A1%80%E8%A7%A3%E6%9E%90%E9%A6%96%E9%A1%B5.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-08</div><div class="title">尚硅谷大数据之Spark基础解析(一)</div></div></a></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/myblog/img/%E5%A4%B4%E5%83%8F.gif" onerror="this.onerror=null;this.src='/myblog/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">Cai XianQuan</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/myblog/archives/"><div class="headline">文章</div><div class="length-num">25</div></a></div><div class="card-info-data-item is-center"><a href="/myblog/tags/"><div class="headline">标签</div><div class="length-num">38</div></a></div><div class="card-info-data-item is-center"><a href="/myblog/categories/"><div class="headline">分类</div><div class="length-num">21</div></a></div></div><a class="button--animated" id="card-info-btn" href="javascript:;"><i class="fab fa-bookmark"></i><span>加入书签</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">一花一世界,一木一菩提╮(￣▽ ￣)╭</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JVM%E4%B8%8EJava%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">JVM与Java体系结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">1.1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="toc-number">1.2.</span> <span class="toc-text">Java虚拟机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM%E7%9A%84%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84"><span class="toc-number">1.3.</span> <span class="toc-text">JVM的整体结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM%E7%9A%84%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.4.</span> <span class="toc-text">JVM的架构模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">1.5.</span> <span class="toc-text">JVM的生命周期</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM%E5%8F%91%E5%B1%95%E5%8E%86%E7%A8%8B"><span class="toc-number">1.6.</span> <span class="toc-text">JVM发展历程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.7.</span> <span class="toc-text">类加载子系统</span></a></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myblog/2021/03/16/Docker%E5%9F%BA%E7%A1%80/" title="Docker基础"><img src="/myblog/2021/03/16/Docker%E5%9F%BA%E7%A1%80/Docker%E5%9F%BA%E7%A1%80%E9%A6%96%E9%A1%B5.png" onerror="this.onerror=null;this.src='/myblog/img/404.jpg'" alt="Docker基础"/></a><div class="content"><a class="title" href="/myblog/2021/03/16/Docker%E5%9F%BA%E7%A1%80/" title="Docker基础">Docker基础</a><time datetime="2021-03-16T02:16:21.000Z" title="发表于 2021-03-16 10:16:21">2021-03-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myblog/2021/03/01/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%9B%BE%E8%A7%A3%E7%BD%91%E7%BB%9C/" title="计算机网络--图解网络"><img src="/myblog/2021/03/01/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%9B%BE%E8%A7%A3%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%9B%BE%E8%A7%A3%E7%BD%91%E7%BB%9C.jpg" onerror="this.onerror=null;this.src='/myblog/img/404.jpg'" alt="计算机网络--图解网络"/></a><div class="content"><a class="title" href="/myblog/2021/03/01/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%9B%BE%E8%A7%A3%E7%BD%91%E7%BB%9C/" title="计算机网络--图解网络">计算机网络--图解网络</a><time datetime="2021-03-01T03:30:23.000Z" title="发表于 2021-03-01 11:30:23">2021-03-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myblog/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/" title="jVM入门学习之内存与垃圾回收篇"><img src="/myblog/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E9%A6%96%E9%A1%B5.png" onerror="this.onerror=null;this.src='/myblog/img/404.jpg'" alt="jVM入门学习之内存与垃圾回收篇"/></a><div class="content"><a class="title" href="/myblog/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/" title="jVM入门学习之内存与垃圾回收篇">jVM入门学习之内存与垃圾回收篇</a><time datetime="2021-02-14T15:22:30.000Z" title="发表于 2021-02-14 23:22:30">2021-02-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myblog/2021/01/29/%E6%A1%86%E6%9E%B6%E5%A5%97%E8%B7%AF%E8%A7%A3%E7%AE%97%E6%B3%95/" title="框架套路解算法"><img src="/myblog/2021/01/29/%E6%A1%86%E6%9E%B6%E5%A5%97%E8%B7%AF%E8%A7%A3%E7%AE%97%E6%B3%95/%E6%A1%86%E6%9E%B6%E5%A5%97%E8%B7%AF%E8%A7%A3%E7%AE%97%E6%B3%95%E9%A6%96%E9%A1%B5.jpg" onerror="this.onerror=null;this.src='/myblog/img/404.jpg'" alt="框架套路解算法"/></a><div class="content"><a class="title" href="/myblog/2021/01/29/%E6%A1%86%E6%9E%B6%E5%A5%97%E8%B7%AF%E8%A7%A3%E7%AE%97%E6%B3%95/" title="框架套路解算法">框架套路解算法</a><time datetime="2021-01-29T07:37:55.000Z" title="发表于 2021-01-29 15:37:55">2021-01-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myblog/2021/01/07/shell%E8%84%9A%E6%9C%AC%E5%AD%A6%E4%B9%A0/" title="shell脚本学习"><img src="/myblog/2021/01/07/shell%E8%84%9A%E6%9C%AC%E5%AD%A6%E4%B9%A0/shell%E8%84%9A%E6%9C%AC%E5%AD%A6%E4%B9%A0%E9%A6%96%E9%A1%B5.jpg" onerror="this.onerror=null;this.src='/myblog/img/404.jpg'" alt="shell脚本学习"/></a><div class="content"><a class="title" href="/myblog/2021/01/07/shell%E8%84%9A%E6%9C%AC%E5%AD%A6%E4%B9%A0/" title="shell脚本学习">shell脚本学习</a><time datetime="2021-01-07T03:29:18.000Z" title="发表于 2021-01-07 11:29:18">2021-01-07</time></div></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/myblog/2021/02/14/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/jVM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%86%85%E5%AD%98%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87%E9%A6%96%E9%A1%B5.png)"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By Cai XianQuan</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi,  welcome  to  my  <a  target="_blank" rel="noopener" href="https://www.caixianquan.tk">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/myblog/js/utils.js"></script><script src="/myblog/js/main.js"></script><script src="/myblog/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/myblog/js/search/local-search.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/myblog/js/bookmark.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/click-heart.min.js" async="async" mobile="true"></script></div></body></html>
