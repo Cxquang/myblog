@@ -10,6 +10,9 @@ description: 大数据各个组件部署安装总结
 cover: /2020/11/16/大数据spark等组件搭建-三/大数据spark等组件搭建-三首页.jpg
 ---
 
+# spark部署
+参考地址：[尚硅谷大数据之Spark基础解析(一)](https://cxquang.github.io/myblog/2020/08/08/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8BSpark%E5%9F%BA%E7%A1%80%E8%A7%A3%E6%9E%90-%E4%B8%80/)
+
 # Flink部署
 ## Standalone模式
 ### 安装
@@ -104,7 +107,7 @@ export PATH=$PATH:$FLINK_HOME/bin
 ```
 
 ### 启动
-启动组件顺序：zookeeper集群【如果有】，hadoop 集群，历史服务器，Flink集群
+启动组件顺序：zookeeper集群【如果有】，hadoop 集群，历史服务器，spark job历史服务器,Flink集群
 
 
 

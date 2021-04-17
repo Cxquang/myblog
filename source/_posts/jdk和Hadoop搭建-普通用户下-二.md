@@ -624,9 +624,3 @@ hadoop104
 （b）查看SecondaryNameNode信息，如图所示。
 ![查看SecondaryNameNode信息](6、查看SecondaryNameNode信息.png)
 
-![example](example.png)
-![example](example.png)
-![example](example.png)
-![example](example.png)
-![example](example.png)
-

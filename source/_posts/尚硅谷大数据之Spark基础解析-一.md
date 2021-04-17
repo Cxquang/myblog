@@ -399,6 +399,7 @@ Spark客户端直接连接Yarn，不需要额外构建Spark集群。有yarn-clie
 {% endnote %}
 
 ### 安装使用
+- <font color=red size=3>***和历史日志服务一起配置，不用分开***</font>
 - 修改hadoop配置文件yarn-site.xml,添加如下内容：
 {% note primary %}
 因为测试环境虚拟机内存较少，防止执行过程进行被意外杀死，做如下配置
@@ -417,14 +418,42 @@ Spark客户端直接连接Yarn，不需要额外构建Spark集群。有yarn-clie
         </property>
 ```
 - 修改spark-env.sh，添加如下配置：
+其中/spark/history必须得在hdfs上先建，`hadoop fs -mkdir -p /spark/history`
 ```shell
 [caixianquan@hadoop102 conf]$ vi spark-env.sh
-YARN_CONF_DIR=/opt/module/hadoop-2.7.2/etc/hadoop
+#spark.history.fs.cleaner.enabled 默认为false
+#这个参数指定history-server的日志是否定时清除，true为定时清除，false为不清除。这个值一定设置成true啊，不然日志文件会越来越大。
+
+#spark.history.fs.cleaner.interval 默认值为1d
+#这个参数指定history-server的日志检查间隔，默认每一天会检查一下日志文件
+
+#spark.history.fs.cleaner.maxAge 默认值为7d
+#这个参数指定history-server日志生命周期，当检查到某个日志文件的生命周期为7d时，则会删除该日志文件
+#spark.history.retainedApplications 　默认值：50
+#在内存中保存Application历史记录的个数，如果超过这个值，旧的应用程序信息将被删除，当再次访问已被删除的应用信息时需要重新构建页面。
+export JAVA_HOME=/opt/module/jdk1.8
+export YARN_CONF_DIR=/opt/module/hadoop-2.7.2/etc/hadoop
+export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=18080 
+-Dspark.history.ui.port=18080 -Dspark.history.fs.cleaner.enabled=true
+-Dspark.history.fs.cleaner.interval=1d
+-Dspark.history.fs.cleaner.maxAge=7d
+-Dspark.history.retainedApplications=50
+-Dspark.history.fs.logDirectory=hdfs://hadoop101:9000/spark/history"
+```
+
+- 修改配置文件spark-defaults.conf
+添加如下内容：
+```shell
+spark.yarn.historyServer.address=hadoop102:18080
+spark.history.ui.port=18080
+spark.eventLog.enabled           true
+spark.eventLog.dir               hdfs://hadoop101:9000/spark/history
 ```
 - 分发配置文件
 ```shell
 [caixianquan@hadoop102 conf]$ xsync /opt/module/hadoop-2.7.2/etc/hadoop/yarn-site.xml
 [caixianquan@hadoop102 conf]$ xsync spark-env.sh
+[caixianquan@hadoop102 conf]$ xsync spark-defaults.conf
 ```
 - 执行一个程序
 ```shell
@@ -438,13 +467,7 @@ YARN_CONF_DIR=/opt/module/hadoop-2.7.2/etc/hadoop
 <font color=red size=3>**注意：在提交任务之前需启动HDFS以及YARN集群。**</font>
 
 ### 日志查看
-- 修改配置文件spark-defaults.conf
-添加如下内容：
-```shell
-spark.yarn.historyServer.address=hadoop102:18080
-spark.history.ui.port=18080
-```
-- 重启spark历史服务
+- 启动spark历史服务
 ```shell
 [caixianquan@hadoop102 spark]$ sbin/stop-history-server.sh 
 stopping org.apache.spark.deploy.history.HistoryServer
@@ -461,6 +484,7 @@ starting org.apache.spark.deploy.history.HistoryServer, logging to /opt/module/s
 100
 ```
 - Web页面查看日志
+<font color=red size=3>***hadoop102:18080***</font>
 ![web页面查看日志](32、web页面查看日志.png)
 {% asset_img 32、web页面查看日志1.png %}
 

@@ -528,18 +528,123 @@ Flink运行时架构主要包括四个不同的组件，它们会在运行流处
 2. 程序设置的并行度要小于或等于配置文件中设置的所有taskmanager的slot数量，否则程序会报错。
 
 ## 任务链（Operator Chains）
-1. Flink采用了一种称为任务链的优化技术，可以在特定条件下减少本地通信的开销。为了满足任务链的要求，必须将两个或多个算子设为相同的并行度，并通过本地转发（local forward）的方式进行连接
+1. Flink采用了一种称为任务链的优化技术，可以在特定条件下减少本地通信的开销。为了满足任务链的要求，必须将两个或多个算子设为相同的并行度，并通过本地转发（local forward）的方式进行连接,即在同一个slot中执行任务。
 2. 相同并行度的one-to-one操作，Flink这样相连的算子链接在一起形成一个task，原来的算子成为里面的subtask
 3. <font color=red size=3>***并行度相同、并且是 one-to-one 操作，两个条件缺一不可***</font>
 ![任务链](19、任务链.png)
 
-#
+# Flink DataStream API
+## 自定义数据源消费数据例子
+1. 编写样例类
+```scala
+package com.caixianquan.learn2
+
+/**
+ * id: 传感器id
+ * sensorTimestamp： 时间戳
+ * temperature：温度值
+ */
+
+
+case class SensorReading(id: String,
+                         sensorTimestamp: Long,
+                         temperature: Double)
+```
+
+2. 编写自定义数据源
+```scala
+package com.caixianquan.learn2
+
+import java.util.Calendar
+
+import org.apache.flink.streaming.api.functions.source.SourceFunction.SourceContext
+import org.apache.flink.streaming.api.functions.source.{RichParallelSourceFunction, SourceFunction}
+
+import scala.util.Random
+
+// 泛型是`SensorReading`，表明产生的流中的事件的类型是`SensorReading`
+class SensorSource extends RichParallelSourceFunction[SensorReading] {
+  // 表示数据源是否正常运行
+  var running: Boolean = true
+
+  // 上下文参数用来发出数据
+  override def run(ctx: SourceContext[SensorReading]): Unit = {
+    val rand = new Random
+
+    var curFTemp = (1 to 10).map(
+      // 使用高斯噪声产生随机温度值
+      i => ("sensor_" + i, (rand.nextGaussian() * 20)) //高斯函数初始化温度值
+    )
+
+    // 产生无限数据流
+    while (running) {
+      curFTemp = curFTemp.map(
+        t => (t._1, t._2 + (rand.nextGaussian() * 0.5))
+      )
+
+      // 产生ms为单位的时间戳
+      val curTime = Calendar.getInstance.getTimeInMillis
+
+      // 使用ctx参数的collect方法发射传感器数据
+      curFTemp.foreach(t => ctx.collect(SensorReading(t._1, curTime, t._2)))
+
+      // 每隔100ms发送一条传感器数据
+      Thread.sleep(1000)
+    }
+  }
+
+  // 定义当取消flink任务时，需要关闭数据源
+  override def cancel(): Unit = running = false
+}
+
+```
+
+3. main方法
+```scala
+package com.caixianquan.learn2
+
+import org.apache.flink.streaming.api.scala._
+
+
+object ConsumeFromSensorSource {
+  def main(args: Array[String]): Unit = {
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(1)
+    
+    //调用addSource方法
+    val stream = env.addSource(new SensorSource)
+    
+    stream.print()
+    
+    env.execute()
+  }
+
+}
+
+```
+![输出结果](20、输出结果.png)
+
+## 转换算子
+1. 大部分函数接口被设计为Single Abstract Method（单独抽象方法）接口，并且接口可以使用Java 8匿名函数来实现。Scala DataStream API也内置了对匿名函数的支持。当讲解DataStream API的转换算子时，我们展示了针对所有函数类的接口，但为了简洁，大部分接口的实现使用匿名函数而不是函数类的方式。
+2. 四类转换算子：
+	- 基本转换算子：将会作用在数据流中的每一条单独的数据上。
+	- KeyedStream转换算子：在数据有key的情况下，对数据应用转换算子。
+	- 多流转换算子：合并多条流为一条流或者将一条流分割为多条流。
+	- 分布式转换算子：将重新组织流里面的事件。
+
+### 基本转换算子
+1. map算子
+
+
+
 
 ![example](example.png)
 ![example](example.png)
 ![example](example.png)
 ![example](example.png)
-
-
-
-
+![example](example.png)
+![example](example.png)
+![example](example.png)
+![example](example.png)
+![example](example.png)
+![example](example.png)

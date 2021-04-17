@@ -23,6 +23,9 @@ yum install -y lrzsz
 #安装网络工具netcat，可以使用测试:nc -lk
 yum install -y nc
 
+#安装文件传输工具：rsync
+yum install -y rsync
+
 #安装ifconfig
 #查看ifconfig是否已安装
 [root@hadoop101 ~]# ls /sbin/ifconfig
