@@ -210,7 +210,7 @@ deploy:
 
 # 在新电脑上继续使用hexo
 ## 说明
-上传到服务器上的hexo.git仓库，后面用没安装过hexo的电脑可以直接clone下来，安装nodejs和hexo，就可以使用
+上传到服务器上的hexo.git仓库，后面用没安装过hexo的电脑可以直接clone下来，安装nodejs（10.15.3）【<font color=red size=3>***Node.js 版本需不低于 10.13，建议使用 Node.js 12.0 及以上版本，参考官网：https://hexo.io/zh-cn/docs***</font>】和hexo，就可以使用
 参考：[迁移hexo到新电脑](https://www.jianshu.com/p/153490a029a5)
 
 ## 创建非裸仓库
@@ -295,11 +295,18 @@ git push
 {% endnote %} 
 
 ## 在新电脑上安装git和nodejs
-步骤省略，参考hexo安装过程，其中还要设置ssh免密登录
+<font color=red size=3>***参考hexo安装过程，其中还要设置ssh免密登录***</font>
+nodejs通过nvm【nodejs版本管理工具】安装，参考：[windows 系统下安装nvm](https://www.jianshu.com/p/96f9317db0b5)
+![windows安装nvm管理nodejs](12、windows安装nvm管理nodejs.png)
 
-## 安装hexo
+   ## 安装hexo
+{% note primary %}
+npm 的仓库在国外，这就意味着下载可能非常慢，或者不可以下载。因此我的解决方案是用淘宝的镜像源替代。
+
+替代方案很简单只需要在命令行输入 `npm install -g cnpm --registry=https://registry.npm.taobao.org` 即可，然后每次需要使用 `npm` 命令时，将 `npm` 换成 `cnpm` 即可。
+{% endnote %}
 ```bash
-npm install hexo-cli -g
+cnpm install hexo-cli -g
 ```
 
 - 在任意文件夹下，执行以下命令，注意如果是为hexo.git,那么会生成一个hexo文件夹
@@ -309,8 +316,8 @@ git clone 用户名@服务器ip:/路径/.git
 
 - 进入到克隆到的文件夹内，执行：
 ```bash
-npm install
-npm install hexo-deployer-git --save
+cnpm install
+cnpm install hexo-deployer-git --save
 ```
 
 {% note info %}

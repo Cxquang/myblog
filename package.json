@@ -9,7 +9,7 @@
     "server": "hexo server",
     "start": "hexo clean && hexo g && hexo s",
     "d": "git checkout hexoSource && hexo clean &&  hexo g -d",
-    "dd": "git checkout hexoSource && hexo clean &&  hexo g -d && git checkout hexoSource && git add -A && git commit -m 'auto' && git push",
+    "push": "git checkout hexoSource && hexo clean &&  hexo g -d && git checkout hexoSource && git add -A && git commit -m 'auto' && git push",
     "pull": "git fetch --all && git reset --hard origin/hexoSource && git pull"
   },
   "hexo": {
