@@ -85,6 +85,164 @@ katex	【可选】显示katex(当设置katex的per_page: false时，才需要配
 2. Thread类的特性
 	- 每个线程都是通过某个特定Thread对象的run()方法来完成操作的，经常把run()方法的主体称为线程体
 	- 通过该 Thread对象的 start（）方法来启动这个线程，而非直接调用run（）
+3. 继承Thread类
+```Java
+package com.caixianquan.Java.Thread;
+
+/**
+ * 多线程的创建，方式一：继承于Thread类
+ * 1. 创建一个继承于Thread类的子类
+ * 2. 重写Thread类的run() --> 将此线程执行的操作声明在run()中
+ * 3. 创建Thread类的子类的对象
+ * 4. 通过此对象调用start()
+ * <p>
+ * 例子：遍历100以内的所有的偶数
+ *
+ * @author shkstart
+ * @create 2019-02-13 上午 11:46
+ */
+
+//1. 创建一个继承于Thread类的子类
+class MyThread extends Thread {
+    //2. 重写Thread类的run()
+    @Override
+    public void run() {
+        for (int i = 0; i < 100; i++) {
+            if(i % 2 == 0){
+                System.out.println(Thread.currentThread().getName() + ":" + i);
+            }
+        }
+    }
+}
+
+
+public class ThreadTest2 {
+    public static void main(String[] args) {
+        //3. 创建Thread类的子类的对象
+        MyThread t1 = new MyThread();
+
+        //4.通过此对象调用start():①启动当前线程 ② 调用当前线程的run()
+        t1.start();
+        //问题一：我们不能通过直接调用run()的方式启动线程。
+//        t1.run();
+
+        //问题二：再启动一个线程，遍历100以内的偶数。不可以还让已经start()的线程去执行。会报IllegalThreadStateException
+//        t1.start();
+        //我们需要重新创建一个线程的对象
+        MyThread t2 = new MyThread();
+        t2.start();
+
+
+        //如下操作仍然是在main线程中执行的。
+        for (int i = 0; i < 100; i++) {
+            if(i % 2 == 0){
+                System.out.println(Thread.currentThread().getName() + ":" + i + "***********main()************");
+            }
+        }
+    }
+
+}
+
+```
+	- Thread类的常用方法
+		- void start() :启动线程，并执行对象的run（）方法
+		- run():线程在被调度时执行的操作
+		- String getName():返回线程的名称
+		- void setName(String name): 设置该线程名称
+		- static Thread currentThread():返回当前线程。在 Thread子类中就是this,通常用于主线程和 Runnable实现类
+		- static void yield() :线程让步
+			- 暂停当前正在执行的线程，把执行机会让给优先级相同或更高的线程
+			- 若队列中没有同优先级的线程，忽路此方法
+		- join() :当某个程序执流中调用其他线程的join（）方法时，调用线程将被阻塞，直到join（）方法加入的join线程执行完为止
+			- 低优先级的线程也可以获得执行
+		- static void sleep(long millis):(指定时间：毫秒)
+			- 令当前活动线程在指定时间段内放弃对CPU控制，使其他线程有机会被执行，时间到后重排队。
+			- 抛出 InterruptedException异常
+		- stop() :强制线程生命期结束，不推荐使用
+		- boolean isAlive() :返回 boolean,判断线程是否还活着
+
+4. 实现Runnable接口
+```Java
+package com.caixianquan.Java.Thread;
+
+/**
+ * 创建多线程的方式二：实现Runnable接口
+ * 1. 创建一个实现了Runnable接口的类
+ * 2. 实现类去实现Runnable中的抽象方法：run()
+ * 3. 创建实现类的对象
+ * 4. 将此对象作为参数传递到Thread类的构造器中，创建Thread类的对象
+ * 5. 通过Thread类的对象调用start()
+ *
+ *
+ * 比较创建线程的两种方式。
+ * 开发中：优先选择：实现Runnable接口的方式
+ * 原因：1. 实现的方式没有类的单继承性的局限性
+ *      2. 实现的方式更适合来处理多个线程有共享数据的情况。
+ *
+ * 联系：public class Thread implements Runnable
+ * 相同点：两种方式都需要重写run(),将线程要执行的逻辑声明在run()中。
+ *
+ * @author shkstart
+ * @create 2019-02-13 下午 4:34
+ */
+//1. 创建一个实现了Runnable接口的类
+class MThread implements Runnable{
+
+    //2. 实现类去实现Runnable中的抽象方法：run()
+    @Override
+    public void run() {
+        for (int i = 0; i < 100; i++) {
+            if(i % 2 == 0){
+                System.out.println(Thread.currentThread().getName() + ":" + i);
+            }
+
+        }
+    }
+}
+
+
+public class ThreadTest1 {
+    public static void main(String[] args) {
+        //3. 创建实现类的对象
+        MThread mThread = new MThread();
+        //4. 将此对象作为参数传递到Thread类的构造器中，创建Thread类的对象
+        Thread t1 = new Thread(mThread);
+        t1.setName("线程1");
+        //5. 通过Thread类的对象调用start():① 启动线程 ②调用当前线程的run()-->调用了Runnable类型的target的run()
+        t1.start();
+
+        //再启动一个线程，遍历100以内的偶数
+        Thread t2 = new Thread(mThread);
+        t2.setName("线程2");
+        t2.start();
+    }
+
+}
+
+```
+
+## 线程的调度
+### 调度策略
+1. 时间片
+![时间片](2、时间片.png)
+2. 抢占式：高优先级的线程抢占CPU
+
+### Java的调度方法
+1. 同优先级线程组成先进先出队列（先到先服务），使用时间片策略
+2. 对高优先级，使用优先调度的抢占式策略
+
+### 线程的优先级
+1. 线程的优先级等级
+	- MAX_PRIORITY: 10
+	- MIN_PRIORITY: 1
+	- NORM_PRIORITY: 5
+
+2. 涉及的方法
+	- getPriority（）:返回线程优先值
+	- setPriority(int newPriority):改变线程的优先级
+3. 说明
+	- 线程创建时继承父线程的优先级
+	- <font color=red size=3>***低优先级只是获得调度的概率低，并非一定是在高优先级线程之后才被调用***</font>
 
 # <font color=red size=3>***Java反射机制***</font>
 {% note primary %}
