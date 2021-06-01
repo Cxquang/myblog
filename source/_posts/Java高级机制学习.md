@@ -54,6 +54,9 @@ katex	【可选】显示katex(当设置katex的per_page: false时，才需要配
 ```
 {% endnote %}
 
+# 枚举类
+
+
 # 多线程
 ## 线程和进程基本概念
 1. <font color=red size=3>***程序( progran)***</font>是为完成特定任务、用某种语言编写的一组指令的集合。即指一段静态的代码，静态对象。
@@ -174,14 +177,6 @@ package com.caixianquan.Java.Thread;
  * 5. 通过Thread类的对象调用start()
  *
  *
- * 比较创建线程的两种方式。
- * 开发中：优先选择：实现Runnable接口的方式
- * 原因：1. 实现的方式没有类的单继承性的局限性
- *      2. 实现的方式更适合来处理多个线程有共享数据的情况。
- *
- * 联系：public class Thread implements Runnable
- * 相同点：两种方式都需要重写run(),将线程要执行的逻辑声明在run()中。
- *
  * @author shkstart
  * @create 2019-02-13 下午 4:34
  */
@@ -221,6 +216,13 @@ public class ThreadTest1 {
 
 ```
 
+5. 比较创建线程的两种方式。
+    - 开发中：优先选择：实现Runnable接口的方式
+    - 原因：1--实现的方式没有类的单继承性的局限性
+        - 2--实现的方式更适合来处理多个线程有共享数据的情况。
+    - 联系：public class Thread implements Runnable
+    - 相同点：两种方式都需要重写run(),将线程要执行的逻辑声明在run()中。
+
 ## 线程的调度
 ### 调度策略
 1. 时间片
@@ -243,6 +245,149 @@ public class ThreadTest1 {
 3. 说明
 	- 线程创建时继承父线程的优先级
 	- <font color=red size=3>***低优先级只是获得调度的概率低，并非一定是在高优先级线程之后才被调用***</font>
+
+## 线程的生命周期
+### JDK中用Thread.State类定义了线程的几种状态
+
+1. 要想实现多线程，必须在主线程中创建新的线程对象。Java语言使用Thread类及其子类的对象来表示线程，在它的一个完整的生命周期中通常要经历如下的五
+种状态：
+    - 新建： 当一个Thread类或其子类的对象被声明并创建时，新生的线程对象处于新建状态
+    - 就绪：处于新建状态的线程被start()后，将进入线程队列等待CPU时间片，此时它已具备了运行的条件，只是没分配到CPU资源
+    - 运行：当就绪的线程被调度并获得CPU资源时,便进入运行状态， run()方法定义了线程的操作和功能
+    - 阻塞：在某种特殊情况下，被人为挂起或执行输入输出操作时，让出 CPU 并临时中止自己的执行，进入阻塞状态
+    - 死亡：线程完成了它的全部工作或线程被提前强制性地中止或出现异常导致结束
+![线程的生命周期](3、线程的生命周期.png)
+
+## 线程的同步
+### 问题
+![多线程的理想状态](5、多线程的理想状态.png)
+![多线程的极端状态被阻塞](6、多线程的极端状态被阻塞.png)
+
+### Synchronized的使用方法
+1. Java对于多线程的安全问题提供了专业的解决方式：同步机制
+
+    - 同步代码块：
+synchronized (同步监视器){
+// 需要被同步的代码；
+// 说明：操作共享数据的代码，即为需要被同步的代码
+//  共享数据：多个线程共同操作的变量。比如：ticket就是共享数据
+//  同步监视器，俗称：锁。任何一个类的对象，都可以充当为锁。
+}
+    - synchronized还可以放在方法声明中，表示整个方法为同步方法。
+例如：
+public synchronized void show (String name){ 
+….
+}
+
+2. 窗口卖票代码
+```Java
+package com.atguigu.java;
+
+/**
+ * 例子：创建三个窗口卖票，总票数为100张.使用实现Runnable接口的方式
+ *
+ * 1.问题：卖票过程中，出现了重票、错票 -->出现了线程的安全问题
+ * 2.问题出现的原因：当某个线程操作车票的过程中，尚未操作完成时，其他线程参与进来，也操作车票。
+ * 3.如何解决：当一个线程a在操作ticket的时候，其他线程不能参与进来。直到线程a操作完ticket时，其他
+ *            线程才可以开始操作ticket。这种情况即使线程a出现了阻塞，也不能被改变。
+ *
+ *
+ * 4.在Java中，我们通过同步机制，来解决线程的安全问题。
+ *
+ *  方式一：同步代码块
+ *
+ *   synchronized(同步监视器){
+ *      //需要被同步的代码
+ *
+ *   }
+ *  说明：1.操作共享数据的代码，即为需要被同步的代码。  -->不能包含代码多了，也不能包含代码少了。
+ *       2.共享数据：多个线程共同操作的变量。比如：ticket就是共享数据。
+ *       3.同步监视器，俗称：锁。任何一个类的对象，都可以充当锁。
+ *          要求：多个线程必须要共用同一把锁。
+ *
+ *       补充：在实现Runnable接口创建多线程的方式中，我们可以考虑使用this充当同步监视器。
+ *  方式二：同步方法。
+ *     如果操作共享数据的代码完整的声明在一个方法中，我们不妨将此方法声明同步的。
+ *
+ *
+ *  5.同步的方式，解决了线程的安全问题。---好处
+ *    操作同步代码时，只能有一个线程参与，其他线程等待。相当于是一个单线程的过程，效率低。 ---局限性
+ *
+ * @author shkstart
+ * @create 2019-02-13 下午 4:47
+ */
+class Window1 implements Runnable{
+
+    private int ticket = 100;
+//    Object obj = new Object();
+//    Dog dog = new Dog();  生成唯一的对象
+    @Override
+    public void run() {
+//        Object obj = new Object();
+        while(true){
+            synchronized (this){//此时的this:唯一的Window1的对象   //方式二：synchronized (dog) {//方式三：synchronized(Windows1.class){  直接使用类作为对象
+
+                if (ticket > 0) {
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    System.out.println(Thread.currentThread().getName() + ":卖票，票号为：" + ticket);
+
+
+                    ticket--;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+public class WindowTest1 {
+    public static void main(String[] args) {
+        Window1 w = new Window1();
+
+        Thread t1 = new Thread(w);
+        Thread t2 = new Thread(w);
+        Thread t3 = new Thread(w);
+
+        t1.setName("窗口1");
+        t2.setName("窗口2");
+        t3.setName("窗口3");
+
+        t1.start();
+        t2.start();
+        t3.start();
+    }
+
+}
+
+
+class Dog{
+
+}
+```
+
+### 分析同步原理
+![同步原理例子](4、同步原理例子.png)
+
+### 同步机制中的锁
+1. 同步锁机制
+    - 在《Thinking in Java》中，是这么说的：对于并发工作，你需要某种方式来防止两个任务访问相同的资源（其实就是共享资源竞争）。 防止这种冲突的方法
+就是当资源被一个任务使用时，在其上加锁。第一个访问某项资源的任务必须锁定这项资源，使其他任务在其被解锁之前，就无法访问它了，而在其被解锁之时，另一个任务就可以锁定并使用它了。
+2. synchronized的锁是什么？
+    - 任意对象都可以作为同步锁。所有对象都自动含有单一的锁（监视器）。
+    - 同步方法的锁：静态方法（类名.class）、非静态方法（this）
+    - 同步代码块：自己指定，很多时候也是指定为this或类名.class
+3. 注意：
+    - 必须确保使用同一个资源的<font color=red size=3>***多个线程共用一把锁***</font>，这个非常重要，否则就无法保证共享资源的安全
+    - 一个线程类中的所有静态方法共用同一把锁（类名.class），所有非静态方法共用同一把锁（this），同步代码块（指定需谨慎）
+4. <font color=red size=3>***继承Thread类需要生成多个线程对象，需要考虑锁是否唯一***</font>
 
 # <font color=red size=3>***Java反射机制***</font>
 {% note primary %}
