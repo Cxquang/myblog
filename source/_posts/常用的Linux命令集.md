@@ -43,6 +43,7 @@ net-tools.x86_64 : Basic networking tools
 [root@hadoop101 ~]# yum install net-tools.x86_64 -y
 ```
 
+
 # 解压/压缩
 ## tar
 ### 命令格式
@@ -100,6 +101,7 @@ tar\[必要参数\]\[选择参数\]\[文件\]
 --version 显示版本信息
 ```
 
+
 ### 常见解压/压缩命令
 ```shell
 tar 
@@ -150,12 +152,14 @@ tar
 压缩：rar a FileName.rar DirName 
 ```
 
+
 # shell使用技巧
 ## vim中执行shell命令
 1. :!command : 不退出vim，并执行shell命令command，将命令输出显示在vim的命令区域，不会改变当前编辑的文件的内容
 ```shell
 :!ls -l
 ```
+
 
 ## vim 删除指定行
 1. 删除第10行到第20行的内容：先用20G转到第20行，然后使用下面命令：
@@ -187,6 +191,7 @@ sed -i '1d' filename
 #删除特定行号
 sed -i 'Nd' filename
 ```
+
 
 # Linux命令操作(杂)
 ## 查询某个文件夹下的文件数量

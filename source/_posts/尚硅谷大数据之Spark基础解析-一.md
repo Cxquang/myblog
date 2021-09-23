@@ -90,21 +90,22 @@ Spark Executor是一个工作进程，负责在 Spark 作业中运行任务，�
 ## Local模式
 
 ### 概述
-- Local模式就是运行在<font color=red size=3>**一台计算机上的模式**</font>，通常就是用于在本机上练手和测试。它可以通过以下集中方式设置Master。
+1. Local模式就是运行在<font color=red size=3>**一台计算机上的模式**</font>，通常就是用于在本机上练手和测试。它可以通过以下集中方式设置Master。
 
-- local: 所有计算都运行在一个线程当中，没有任何并行计算，通常我们在本机执行一些测试代码，或者练手，就用这种模式;
+2. local: 所有计算都运行在一个线程当中，没有任何并行计算，通常我们在本机执行一些测试代码，或者练手，就用这种模式;
 
-- local[K]: 指定使用几个线程来运行计算，比如local[4]就是运行4个Worker线程。<font color=red size=3>**通常我们的Cpu有几个Core，就指定几个线程**</font>，最大化利用Cpu的计算能力;
+3. local[K]: 指定使用几个线程来运行计算，比如local[4]就是运行4个Worker线程。<font color=red size=3>**通常我们的Cpu有几个Core，就指定几个线程**</font>，最大化利用Cpu的计算能力;
 
-- local[*]: 这种模式直接帮你按照Cpu最多Cores来设置线程数了。
+4. `local[*]`: 这种模式直接帮你按照Cpu最多Cores来设置线程数了。
+
 
 ### 安装使用
-- 上传并解压spark安装包
+1. 上传并解压spark安装包
 ```shell
 [caixianquan@hadoop102 sorfware]$ tar -zxvf spark-2.1.1-bin-hadoop2.7.tgz -C /opt/module/
 [caixianquan@hadoop102 module]$ mv spark-2.1.1-bin-hadoop2.7 spark
 ```
-- 官方求PI案例
+2. 官方求PI案例
 【反斜杠 \ 表示连接，太长换行】
 ```shell
 [caixianquan@hadoop102 spark]$ bin/spark-submit \
@@ -138,11 +139,11 @@ application-arguments: 传给main()方法的参数
 ```
 {% endnote %}
 
-- 结果展示
+3. 结果展示
 该算法是利用蒙特·卡罗算法求PI【<font color=red size=3>**后面的100是传入的参数，计算100次**</font>】
 ![蒙特·卡罗算法](4、蒙特·卡罗算法.png)
 
-- 准备文件
+4. 准备文件
 ```shell
 [caixianquan@hadoop102 spark]$ mkdir input
 ```
@@ -151,7 +152,7 @@ application-arguments: 传给main()方法的参数
 |:-|:-|
 |Hello World<br>Hello Spark|Hello Spark|
 
-- 启动spark-shell
+5. 启动spark-shell
 ```shell
 [caixianquan@hadoop102 spark]$ bin/spark-shell
 Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
@@ -176,9 +177,10 @@ Type :help for more information.
 scala>
 ```
 {% note primary %}
-注意：sc是SparkCore程序的入口；spark是SparkSQL程序入口；master = local[*]表示本地模式运行。
+注意：sc是SparkCore程序的入口；spark是SparkSQL程序入口；`master = local[*]`表示本地模式运行。
 {% endnote %}
 开启另一个CRD窗口
+
 ```shell
 [caixianquan@hadoop102 spark]$ jps
 3627 SparkSubmit
@@ -186,6 +188,7 @@ scala>
 ```
 可登录hadoop102:4040查看程序运行
 ![查看程序运行](5、查看程序运行.png)
+
 
 ###  运行WordCount程序
 ```scala
@@ -216,16 +219,16 @@ collect：将数据收集到Driver端展示。
 ![Standalone运行模式](9、Standalone运行模式.png)
 
 ### 安装使用
-- 进入spark安装目录下的conf文件夹
+1. 进入spark安装目录下的conf文件夹
 ```shell
 [atguigu@hadoop102 module]$ cd spark/conf/
 ```
-- 修改配置文件名称
+2. 修改配置文件名称
 ```shell
 [atguigu@hadoop102 conf]$ mv slaves.template slaves
 [atguigu@hadoop102 conf]$ mv spark-env.sh.template spark-env.sh
 ```
-- 修改slave文件，添加work节点：
+3. 修改slave文件，添加work节点：
 ```shell
 [atguigu@hadoop102 conf]$ vim slaves
 
@@ -233,19 +236,19 @@ hadoop102
 hadoop103
 hadoop104
 ```
-- 修改spark-env.sh文件，添加如下配置：
+4. 修改spark-env.sh文件，添加如下配置：
 ```shell
 [atguigu@hadoop102 conf]$ vim spark-env.sh
 
 SPARK_MASTER_HOST=hadoop102
 SPARK_MASTER_PORT=7077
 ```
-- 分发spark包
+5. 分发spark包
 ```shell
 [atguigu@hadoop102 module]$ xsync spark/
 ```
 
-- 启动
+6. 启动
 ```shell
 [atguigu@hadoop102 spark]$ sbin/start-all.sh
 [atguigu@hadoop102 spark]$ util.sh 
@@ -266,7 +269,7 @@ SPARK_MASTER_PORT=7077
 export JAVA_HOME=XXXX
 {% endnote %}
 
-- 官方求PI案例
+7. 官方求PI案例
 ```shell
 [atguigu@hadoop102 spark]$ bin/spark-submit \
 --class org.apache.spark.examples.SparkPi \
@@ -278,14 +281,15 @@ export JAVA_HOME=XXXX
 ```
 ![官方程序运行结果](10、官方程序运行结果.png)
 
-- 启动spark shell
+8. 启动spark shell
 ```shell
 /opt/module/spark/bin/spark-shell \
 --master spark://hadoop102:7077 \
 --executor-memory 1g \
 --total-executor-cores 2
 ```
-参数：--master spark://hadoop102:7077指定要连接的集群的master
+
+参数：`--master spark://hadoop102:7077`指定要连接的集群的master
 执行WordCount程序
 ```scala
 scala>sc.textFile("input").flatMap(_.split(" ")).map((_,1)).reduceByKey(_+_).collect
@@ -293,13 +297,15 @@ res0: Array[(String, Int)] = Array((hadoop,6), (oozie,3), (spark,3), (hive,3), (
 
 scala>
 ```
+
+
 ### JobHistoryServer配置
-- 修改spark-default.conf.template名称
+1. 修改spark-default.conf.template名称
 ```shell
 [atguigu@hadoop102 conf]$ mv spark-defaults.conf.template spark-defaults.conf
 ```
 
-- 修改spark-default.conf文件，开启Log：
+2. 修改spark-default.conf文件，开启Log：
 <font color=red size=3>**注意：HDFS上的目录需要提前存在。**</font>
 ```shell
 [atguigu@hadoop102 conf]$ vi spark-defaults.conf
@@ -309,7 +315,7 @@ spark.eventLog.dir               hdfs://hadoop102:9000/directory
 [atguigu@hadoop102 hadoop]$ hadoop fs –mkdir /directory
 ```
 
-- 修改spark-env.sh文件，添加如下配置：
+3. 修改spark-env.sh文件，添加如下配置：
 ```shell
 [atguigu@hadoop102 conf]$ vi spark-env.sh
 
@@ -323,16 +329,16 @@ export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=18080
  3. spark.history.fs.logDirectory=hdfs://hadoop102:9000/directory  配置了该属性后，在start-history-server.sh时就无需再显式的指定路径，Spark History Server页面只展示该指定路径下的信息
  4. spark.history.retainedApplications=30指定保存Application历史记录的个数，如果超过这个值，旧的应用程序信息将被删除，这个是内存中的应用数，而不是页面上显示的应用数。
 
-- 分发配置文件
+4. 分发配置文件
 ```shell
 [atguigu@hadoop102 conf]$ xsync spark-defaults.conf
 [atguigu@hadoop102 conf]$ xsync spark-env.sh
 ```
-- 启动历史服务
+5. 启动历史服务
 ```shell
 [atguigu@hadoop102 spark]$ sbin/start-history-server.sh
 ```
-- 再次执行任务
+6. 再次执行任务
 ```shell
 [atguigu@hadoop102 spark]$ bin/spark-submit \
 --class org.apache.spark.examples.SparkPi \
@@ -342,9 +348,10 @@ export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=18080
 ./examples/jars/spark-examples_2.11-2.1.1.jar \
 100
 ```
-- 查看历史服务
+7. 查看历史服务
 hadoop102:18080
 ![查看历史服务](11、查看历史服务.png)
+
 
 ### HA配置
 ![HA架构图](12、HA架构图.png)
@@ -386,6 +393,8 @@ export SPARK_DAEMON_JAVA_OPTS="
 --executor-memory 2g \
 --total-executor-cores 2
 ```
+
+
 ## Yarn模式（重点）
 ### 概述
 Spark客户端直接连接Yarn，不需要额外构建Spark集群。有yarn-client和yarn-cluster两种模式，<font color=red size=3>**主要区别在于：Driver程序的运行节点。**</font>
@@ -398,8 +407,9 @@ Spark客户端直接连接Yarn，不需要额外构建Spark集群。有yarn-clie
 申请资源：ApplicationMaster不清楚哪些节点的资源可以使用，所以需要向RM申请资源
 {% endnote %}
 
+
 ### 安装使用
-- <font color=red size=3>***和历史日志服务一起配置，不用分开***</font>
+- <font color=red size=3>**和历史日志服务一起配置，不用分开**</font>
 - 修改hadoop配置文件yarn-site.xml,添加如下内容：
 {% note primary %}
 因为测试环境虚拟机内存较少，防止执行过程进行被意外杀死，做如下配置
@@ -466,6 +476,7 @@ spark.eventLog.dir               hdfs://hadoop101:9000/spark/history
 ```
 <font color=red size=3>**注意：在提交任务之前需启动HDFS以及YARN集群。**</font>
 
+
 ### 日志查看
 - 启动spark历史服务
 ```shell
@@ -484,9 +495,10 @@ starting org.apache.spark.deploy.history.HistoryServer, logging to /opt/module/s
 100
 ```
 - Web页面查看日志
-<font color=red size=3>***hadoop102:18080***</font>
+<font color=red size=3>**hadoop102:18080**</font>
 ![web页面查看日志](32、web页面查看日志.png)
 {% asset_img 32、web页面查看日志1.png %}
+
 
 # 案例实操
 ## 编写WordCount程序
@@ -521,6 +533,8 @@ starting org.apache.spark.deploy.history.HistoryServer, logging to /opt/module/s
 {% note primary %}
 注意：如果maven版本为3.2.x，插件下载报错，那么修改插件版本为3.3.2
 {% endnote %}
+
+
 ### 编写代码
 ```scala
 package com.atguigu
@@ -545,6 +559,7 @@ object WordCount{
   }
 }
 ```
+
 
 ### 打包插件
 ```xml
@@ -573,6 +588,7 @@ object WordCount{
                 </executions>
 </plugin>
 ```
+
 
 ### 打包到集群测试
 #### 通过Project Structure方式打包
@@ -615,6 +631,8 @@ WordCount.jar \
 /word.txt \
 /out
 ```
+
+
 ## 本地调试
 - 本地Spark程序调试需要使用local提交模式，即将本机当做运行环境，Master和Worker都为本机。运行时直接加断点调试即可。如下：
 创建SparkConf的时候设置额外属性，表明本地执行：

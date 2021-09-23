@@ -53,8 +53,11 @@ Starting taskexecutor daemon on host hadoop103.
 /opt/module/flink-1.10.0/bin/flink run   /opt/module/flink-1.10.0/examples/batch/WordCount.jar
 ```
 
+
 ## Flink on yarn模式
 参考例子：[Flink On Yarn安装部署笔记（flink-1.10.0，Hadoop2.10.1）](https://www.cnblogs.com/quchunhui/p/12463455.html)
+
+
 ### 设置环境变量
 ```shell /etc/profile
 #hadoop需要增加如下环境变量,可能会报错误： java.lang.ClassNotFoundException: org.apache.hadoop.yarn.exceptions.YarnException
@@ -67,6 +70,7 @@ export PATH=$PATH:$FLINK_HOME/bin
 ```
 分发到其他节点并source该文件
 
+
 ### 导入对应flink集成对应的hadoop的jar包
 要操作hdfs的话，必须要在flink安装目录的 lib 下加上额外的jar包
 参考地址：https://ci.apache.org/projects/flink/flink-docs-release-1.8/release-notes/flink-1.8.html
@@ -74,6 +78,7 @@ export PATH=$PATH:$FLINK_HOME/bin
 下载地址：https://repo.maven.apache.org/maven2/org/apache/flink/flink-shaded-hadoop-2-uber/2.7.5-10.0/flink-shaded-hadoop-2-uber-2.7.5-10.0.jar
 
 将该jar包导入到各个节点的flink的lib目录下
+
 
 ### yarn-site.xml配置
 ```shell  增加配置
@@ -105,6 +110,7 @@ export PATH=$PATH:$FLINK_HOME/bin
 </property>
 
 ```
+
 
 ### 启动
 启动组件顺序：zookeeper集群【如果有】，hadoop 集群，历史服务器，spark job历史服务器,Flink集群

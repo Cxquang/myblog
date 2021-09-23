@@ -26,6 +26,7 @@ UseDNS no  #--->把注释打开，改为no，然后重启ssh服务即可
 重启ssh服务：service sshd restart
 ```
 
+
 # linux 扩展磁盘
 1. 如果是虚拟机virtualbox，需要先添加新的虚拟硬盘
 ![新建虚拟磁盘](1、新建虚拟磁盘.png)
@@ -75,6 +76,7 @@ mkfs.xfs /dev/sdb1
 #在文件最后新增一行：
 /dev/sdb1                   /mnt/sdb1                xfs   defaults        0 0
 ```
+
 
 ![example](example.png)
 ![example](example.png)

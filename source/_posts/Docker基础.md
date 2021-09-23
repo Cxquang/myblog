@@ -59,9 +59,9 @@ katex	【可选】显示katex(当设置katex的per_page: false时，才需要配
 4. 虚拟机是系统级的隔离，对硬件资源进行虚拟化；Docker是应用级别的隔离，直接使用硬件资源。
 
 ## 基本概念
-1. <font color=red size=3>***镜像（Image）***</font>：Docker 镜像（Image），就相当于是一个 root 文件系统。比如官方镜像 ubuntu:16.04 就包含了完整的一套 Ubuntu16.04 最小系统的 root 文件系统。
-2. <font color=red size=3>***容器（Container）***</font>：镜像（Image）和容器（Container）的关系，就像是面向对象程序设计中的类和实例一样，镜像是静态的定义，容器是镜像运行时的实体。容器可以被创建、启动、停止、删除、暂停等。
-3. <font color=red size=3>***仓库（Repository）***</font>：仓库可看成一个代码控制中心，用来保存镜像。
+1. <font color=red size=3>**镜像（Image）**</font>：Docker 镜像（Image），就相当于是一个 root 文件系统。比如官方镜像 ubuntu:16.04 就包含了完整的一套 Ubuntu16.04 最小系统的 root 文件系统。
+2. <font color=red size=3>**容器（Container）**</font>：镜像（Image）和容器（Container）的关系，就像是面向对象程序设计中的类和实例一样，镜像是静态的定义，容器是镜像运行时的实体。容器可以被创建、启动、停止、删除、暂停等。
+3. <font color=red size=3>**仓库（Repository）**</font>：仓库可看成一个代码控制中心，用来保存镜像。
 ![Docker基本概念](1、Docker基本概念.png)
 4. Docker 客户端(Client)：Docker客户端通过命令行或者其他工具使用Docker SDK(https://docs.docker.com/develop/sdk/)与Docker的守护进程通信。
 5. Docker 主机(Host)：一个物理或者虚拟的机器用于执行Docker守护进程和容器。
@@ -116,7 +116,7 @@ CMD ["echo","hello"]
 
 # Docker安装大数据环境
 ## ~~镜像准备~~
-1. 创建带有ssh，jdk以及各种大数据组件的镜像dockerfile【<font color=red size=3>***不用dockerfile，直接用centos创建后面通过容器生成镜像***</font>】
+1. 创建带有ssh，jdk以及各种大数据组件的镜像dockerfile【<font color=red size=3>**不用dockerfile，直接用centos创建后面通过容器生成镜像**</font>】
 	- 新建一个空目录，在其中新建一个文件名为dockerfile
 ```shell
 #选择一个已有的os镜像作为基础：
@@ -156,6 +156,7 @@ docker run -itd --name centos --hostname hadoop101 --net mynetwork --ip 192.168.
 #进入容器
 docker exec -it centos /bin/bash
 ```
+
 
 ## 安装必要工具
 ```shell
@@ -246,12 +247,14 @@ set fileformats=unix
 set encoding=prc
 ```
 
+
 ## 导出导入容器
 ```shell
 #指定容器id
 docker export 1e560fca3906 > centos.tar
 docker import - docker/hadoop_v1.0 < centos.tar
 ```
+
 
 ## 创建自定义网络 
 1. ~~自定义网络~~
@@ -271,10 +274,11 @@ b30b0138fee2   mynetwork   bridge    local
 1f579d94536b   none        null      local
 ```
 
+
 ## 网络问题： docker容器使用自定义网络无法ping通网关，也无法ping通外网以及其他docker容器
 参考地址：[Docker 容器不能ping通默认网关(172.17.0.1)--已解决](https://blog.csdn.net/coolfishbone_joey/article/details/107146839)
 参考地址：[Centos7 升级内核版本](https://www.cnblogs.com/xzkzzz/p/9627658.html)
-<font color=red size=3>***查看宿主机内核发现是3.10的，需要升级内核***</font>
+<font color=red size=3>**查看宿主机内核发现是3.10的，需要升级内核**</font>
 ```shell
 #查看当前内核版本
 [root@docker module]# uname -r
@@ -397,6 +401,8 @@ $ yum install yum-utils
 
 package-cleanup --oldkernels
 ```
+
+
 ## 启动容器
 1. 首先因为是一个3节点的hadoop集群环境，因此先创建3个hadoop的节点：（创建的节点需要带有本地同步目录）,hadoop1作为主节点master
 `使用VOLUME卷，将数据保存到宿主机，这样子就可以只保留一个镜像，而hdfs数据保存到宿主机上而不影响节点`
@@ -420,7 +426,7 @@ docker run --name hadoop103 --hostname hadoop103 --add-host hadoop101:192.168.12
 	- 。。。【参考jdk和Hadoop搭建即可】
 
 ## ~~保存容器状态为新镜像~~
-<font color=red size=3>***使用导出导入镜像，删除时比较方便，没有前面依赖镜像等***</font>
+<font color=red size=3>**使用导出导入镜像，删除时比较方便，没有前面依赖镜像等**</font>
 1. 重启开启容器centos中的/etc/profile可能不会生效，得手动source一下，可以将命令`source /etc/profile`添加在~/.bashrc的文本末尾中，要注意不要添加到/etc/bashrc中，否则会卡死Linux，未找出原因
 2. 为了能够保存当前容器的状态，修改后的配置文件等，可以保存为镜像，下次直接从镜像中启动容器即可
 ```shell

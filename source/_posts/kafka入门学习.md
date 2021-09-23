@@ -54,7 +54,7 @@ katex	【可选】显示katex(当设置katex的per_page: false时，才需要配
 
 # kafka概述
 ## 定义
-- Kafka是一个分布式的<font color=red size=3>***基于发布/订阅模式***</font>的<font color=red size=3>***消息队列***</font>，主要应用于大数据实时处理领域。
+- Kafka是一个分布式的<font color=red size=3>**基于发布/订阅模式**</font>的<font color=red size=3>**消息队列**</font>，主要应用于大数据实时处理领域。
 
 ## 消息队列（Message Queue）
 - 三个作用：异步，消峰，解耦
@@ -68,12 +68,12 @@ katex	【可选】显示katex(当设置katex的per_page: false时，才需要配
 ![MQ传统应用场景之流量消峰](2、MQ传统应用场景之流量消峰.png)
 
 ### 消息队列的两种模式
-1. 点对点模式（<font color=red size=3>***一对一***</font>，消费者主动拉取数据，消息收到后消息清除）
+1. 点对点模式（<font color=red size=3>**一对一**</font>，消费者主动拉取数据，消息收到后消息清除）
 
  - 消息生产者生产消息发送到Queue中，然后消息消费者从Queue中取出并且消费消息。消息被消费以后，queue中不再有存储，所以消息消费者不可能消费到已经被消费的消息。Queue支持存在多个消费者，但是对一个消息而言，只会有一个消费者可以消费。
 ![点对点模式](3、点对点模式.png)
 
-2. 发布/订阅模式（<font color=red size=3>***一对多***</font>，消费者消费数据之后不会清除消息）
+2. 发布/订阅模式（<font color=red size=3>**一对多**</font>，消费者消费数据之后不会清除消息）
  - 消息生产者（发布）将消息发布到topic中，同时有多个消息消费者（订阅）消费该消息。和点对点方式不同，发布到topic的消息会被所有订阅者消费。
 ![发布/订阅模式](4、发布_订阅模式.png)
 
@@ -82,8 +82,8 @@ katex	【可选】显示katex(当设置katex的per_page: false时，才需要配
 ![一个topic分为多个partition](6、一个topic分为多个partition.png)
 
 - 一个组负责消费一个topic，每个分区对应一个消费者，
-- 分区数超过组内消费者数时，需要怎么做，<font color=red size=3>***一个消费者可以消费多个分区***</font>；
-- 而一个分区不能被两个消费者消费，如果消费者数多于分区数，那么<font color=red size=3>***多出的消费者会消费不了数据***</font>。
+- 分区数超过组内消费者数时，需要怎么做，<font color=red size=3>**一个消费者可以消费多个分区**</font>；
+- 而一个分区不能被两个消费者消费，如果消费者数多于分区数，那么<font color=red size=3>**多出的消费者会消费不了数据**</font>。
 
 ![消费组概念](7、消费组概念.png)
 ![增加多个副本](8、增加多个副本.png)

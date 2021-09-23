@@ -118,11 +118,11 @@ reprocess config line 38: Deprecated option RSAAuthentication
 
 ## 普通账户下免密登录
 - ~~之前在root下已经生成了私钥和公钥，直接将公钥复制到普通账户下的.ssh目录下的authorized_keys文件下，如果没有该目录及文件则手动创建。~~
-- <font color=red size=3>***上述方法有可能会报权限拒绝问题【使用私钥ssh连接】***</font>
+- <font color=red size=3>**上述方法有可能会报权限拒绝问题【使用私钥ssh连接】**</font>
  1. git bash中ssh连接时报如下错误：Permission denied (publickey,gssapi-keyex,gssapi-with-mic).
  2. 在xshell使用私钥连接时报错：所选的用户密钥未在远程主机上注册
  3. 登录目标服务器查看sshd日志信息，日志信息目录为，/var/log/secure，有如下错误：Jul 22 14:20:33 v138020.go sshd[4917]: Authentication refused: bad ownership or modes for directory /home/xinhailong
- 4. 原因：sshd为了安全，对属主的目录和文件权限有所要求。如果权限不对，则ssh的免密码登陆不生效。用户目录权限为 755 或者 700，就是不能是77x。.ssh目录权限一般为755或者700。rsa_id.pub 及authorized_keys权限一般为644，rsa_id权限必须为600
+ 4. 原因：sshd为了安全，对属主的目录和文件权限有所要求。如果权限不对，则ssh的免密码登陆不生效。用户目录权限为 755 或者 700，就是不能是77x。<font color=red size=3>**.ssh目录权限一般为755或者700。id_rsa.pub 及authorized_keys权限一般为644，id_rsa权限必须为600**</font>
  5. 如果是手动创建的.ssh和authorized_keys文件时就要安装以上重新配置权限即可。参考地址：[ssh免密码登陆设置时Authentication refused: bad ownership or modes错误解决方法](https://blog.csdn.net/kmhysoft/article/details/70432633)
 - 在本地windows下在使用ssh的客户端软件中修改配置文件，如git工具，在安装目录下有ssh的配置文件，如下：
 ![修改ssh客户端配置文件](1、修改ssh客户端配置文件.png)
@@ -210,7 +210,7 @@ deploy:
 
 # 在新电脑上继续使用hexo
 ## 说明
-上传到服务器上的hexo.git仓库，后面用没安装过hexo的电脑可以直接clone下来，安装nodejs（10.15.3）【<font color=red size=3>***Node.js 版本需不低于 10.13，建议使用 Node.js 12.0 及以上版本，参考官网：https://hexo.io/zh-cn/docs***</font>】和hexo，就可以使用
+上传到服务器上的hexo.git仓库，后面用没安装过hexo的电脑可以直接clone下来，安装nodejs（10.15.3）【<font color=red size=3>**Node.js 版本需不低于 10.13，建议使用 Node.js 12.0 及以上版本，参考官网：https://hexo.io/zh-cn/docs**</font>】和hexo，就可以使用
 参考：[迁移hexo到新电脑](https://www.jianshu.com/p/153490a029a5)
 
 ## 创建非裸仓库
@@ -295,7 +295,7 @@ git push
 {% endnote %} 
 
 ## 在新电脑上安装git和nodejs
-<font color=red size=3>***参考hexo安装过程，其中还要设置ssh免密登录***</font>
+<font color=red size=3>**参考hexo安装过程，其中还要设置ssh免密登录**</font>
 nodejs通过nvm【nodejs版本管理工具】安装，参考：[windows 系统下安装nvm](https://www.jianshu.com/p/96f9317db0b5)
 ![windows安装nvm管理nodejs](12、windows安装nvm管理nodejs.png)
 

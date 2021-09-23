@@ -543,7 +543,7 @@ http://192.168.56.104:19888/jobhistory
 http://192.168.56.104:19888/jobhistory
 
 ### 集群单点启动
-<font color=red size=3>***如果集群是第一次启动，需要格式化NameNode***</font>
+<font color=red size=3>**如果集群是第一次启动，需要格式化NameNode**</font>
 {% note primary %}
 注意格式化之前，一定要先停止上次启动的所有namenode和datanode进程，然后再删除data和log数据，注意是所有节点的data和log数据
 {% endnote %}

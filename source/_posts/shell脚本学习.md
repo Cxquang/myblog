@@ -52,8 +52,10 @@ echo "inmode: "$inmode
 echo "activeProfiles: "$activeProfile
 ```
 
+
 # 字符串分割
 参考地址：[Shell_Linux Shell 中实现字符串切割的几种方法](https://blog.csdn.net/u010003835/article/details/80750003)
+
 
 ## 利用shell中变量的字符串替换
 1. 原理：${parameter//pattern/string} 
@@ -74,6 +76,7 @@ shell
 split
 test
 ```
+
 
 ## 设置分隔符通过IFS变量
 1. IFS介绍
@@ -128,6 +131,7 @@ test
 	- 参数
   	 - 字符集1：指定要转换或删除的原字符集。当执行转换操作时，必须使用参数“字符集2”指定转换的目标字符集。但执行删除操作时，不需要参数“字符集2”；
   	 - 字符集2：指定要转换成的目标字符集。
+
 
 ### 示例
 ```shell
